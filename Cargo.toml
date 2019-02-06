@@ -1,0 +1,8 @@
+[package]
+name = "rustblocks"
+version = "0.1.0"
+authors = ["Andrea Tomasi(treere)"]
+edition = "2018"
+
+[dependencies]
+amethyst = "0.10.0"
