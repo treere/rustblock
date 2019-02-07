@@ -22,7 +22,8 @@ fn main() -> amethyst::Result<()> {
 
     let game_data = GameDataBuilder::default()
         .with_basic_renderer(config, DrawFlat::<PosTex>::new(), true)?
-        .with_bundle(TransformBundle::new())?;
+        .with_bundle(TransformBundle::new())?
+        .with(level::system::MoveBallSysytem, "move_ball_system", &[]);
 
     let mut game = Application::build("./", Level)?
         .build(game_data)?;
