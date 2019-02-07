@@ -1,7 +1,9 @@
 extern crate amethyst;
 
+use std::time::Duration;
+
 use amethyst::{
-    core::TransformBundle,
+    core::{frame_limiter::FrameRateLimitStrategy, TransformBundle},
     prelude::*,
     renderer::{
         DrawFlat,
@@ -26,6 +28,10 @@ fn main() -> amethyst::Result<()> {
         .with(level::system::MoveBallSysytem, "move_ball_system", &[]);
 
     let mut game = Application::build("./", Level)?
+        .with_frame_limit(
+            FrameRateLimitStrategy::SleepAndYield(Duration::from_millis(2)),
+            60,
+        )
         .build(game_data)?;
 
     game.run();
