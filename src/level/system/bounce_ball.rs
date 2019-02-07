@@ -18,11 +18,11 @@ impl<'s> System<'s> for BounceBall {
         for (ball, transform) in (&mut balls, &transforms).join() {
             let position = transform.translation();
 
-            if position.y <= ball.radius || SCREEN_WIDTH - position.y <= ball.radius {
+            if position.y <= ball.radius || SCREEN_HEIGHT - position.y <= ball.radius {
                 ball.vel_y = -ball.vel_y;
                 println!("HIT Y!");
             }
-            if position.x <= ball.radius || SCREEN_HEIGHT - position.x <= ball.radius {
+            if position.x <= ball.radius || SCREEN_WIDTH - position.x <= ball.radius {
                 ball.vel_x = -ball.vel_x;
                 println!("HIT Y!");
             }

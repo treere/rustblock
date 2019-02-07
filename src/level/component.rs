@@ -12,7 +12,8 @@ impl Component for Ball {
 
 pub struct Paddle {
     pub width: f32,
-    pub height: f32
+    pub height: f32,
+    pub speed: f32,
 }
 
 impl Component for Paddle {

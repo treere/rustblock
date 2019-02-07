@@ -4,7 +4,7 @@ use amethyst::{
     renderer::{Camera, Projection},
 };
 
-use super::{BALL_RADIUS, BALL_SPEED, PADDLE_HEIGHT, PADDLE_OFFSET, PADDLE_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH};
+use super::{BALL_RADIUS, BALL_SPEED, PADDLE_HEIGHT, PADDLE_OFFSET, PADDLE_SPEED, PADDLE_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH};
 use super::component::{Ball, Paddle};
 use super::util::*;
 
@@ -42,7 +42,7 @@ fn initialize_pad(world: &mut World) {
     let mut trans = Transform::default();
     trans.set_xyz(SCREEN_WIDTH / 2. - PADDLE_WIDTH / 2., PADDLE_HEIGHT + PADDLE_OFFSET, 0.);
 
-    let pad = Paddle { width: PADDLE_WIDTH, height: PADDLE_WIDTH };
+    let pad = Paddle { width: PADDLE_WIDTH, height: PADDLE_WIDTH, speed: PADDLE_SPEED };
 
     world
         .create_entity()

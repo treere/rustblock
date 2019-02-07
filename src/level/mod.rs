@@ -7,6 +7,7 @@ pub const PADDLE_WIDTH: f32 = 100.;
 pub const PADDLE_HEIGHT: f32 = 10.;
 pub const PADDLE_OFFSET: f32 = 10.;
 pub const BALL_SPEED: f32 = 100.;
+pub const PADDLE_SPEED: f32 = 6.;
 
 mod util;
 mod data;
