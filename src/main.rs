@@ -1,23 +1,23 @@
 extern crate amethyst;
 
 use amethyst::{
-    prelude::*,
     assets::Loader,
+    core::{
+        nalgebra::{Vector2, Vector3},
+        Transform,
+        TransformBundle
+    },
+    prelude::*,
     renderer::{
-        Projection,
         Camera,
         DrawFlat,
-        PosTex,
-        MeshHandle,
         Material,
         MaterialDefaults,
+        MeshHandle,
+        PosTex,
+        Projection,
     },
     utils::application_root_dir,
-    core::{
-        TransformBundle,
-        Transform,
-        nalgebra::{Vector2, Vector3}
-    },
 };
 
 struct Level;
@@ -47,13 +47,14 @@ fn initialize_camera(world: &mut World) {
 fn initialize_pad(world: &mut World) {
     let pad_mesh = create_mesh(
         world,
-        generate_rectangle_vertices(0.0, 0.0, 100.0, 100.0),
+        //generate_rectangle_vertices(0.0, 0.0, 100.0, 10.0),
+        generate_circle_vertices(10., 16)
     );
 
     let pad_material = create_colour_material(world, [0., 0., 1., 1.]);
 
     let mut trans = Transform::default();
-    trans.set_xyz(200., 200., 0.);
+    trans.set_xyz(640. / 2. - 100. / 2., 20., 0.);
 
     world.create_entity()
         .with(pad_mesh)
@@ -97,6 +98,36 @@ fn generate_rectangle_vertices(left: f32, bottom: f32, right: f32, top: f32) -> 
         },
     ]
 }
+
+fn generate_circle_vertices(radius: f32, resolution: usize) -> Vec<PosTex> {
+    use std::f32::consts::PI;
+
+    let mut vertices = Vec::with_capacity(resolution * 3);
+    let angle_offset = 2.0 * PI / resolution as f32;
+
+    // Helper function to generate the vertex at the specified angle.
+    let generate_vertex = |angle: f32| {
+        let x = angle.cos();
+        let y = angle.sin();
+        PosTex {
+            position: Vector3::new(x * radius, y * radius, 0.0),
+            tex_coord: Vector2::new(x, y),
+        }
+    };
+
+    for index in 0..resolution {
+        vertices.push(PosTex {
+            position: Vector3::new(0.0, 0.0, 0.0),
+            tex_coord: Vector2::new(0.0, 0.0),
+        });
+
+        vertices.push(generate_vertex(angle_offset * index as f32));
+        vertices.push(generate_vertex(angle_offset * (index + 1) as f32));
+    }
+
+    vertices
+}
+
 
 /// Creates a solid material of the specified colour.
 fn create_colour_material(world: &World, colour: [f32; 4]) -> Material {
