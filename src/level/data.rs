@@ -4,20 +4,18 @@ use amethyst::{
     renderer::{Camera, Projection},
 };
 
+use super::{BALL_RADIUS, PADDLE_HEIGHT, PADDLE_OFFSET, PADDLE_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH};
+use super::component::{Ball, Paddle};
 use super::util::*;
-
-const SCREEN_WIDTH: f32 = 640.0;
-const SCREEN_HEIGHT: f32 = 480.0;
-const BALL_RADIUS: f32 = 5.;
-const PADDLE_WIDTH: f32 = 100.;
-const PADDLE_HEIGHT: f32 = 10.;
-const PADDLE_OFFSET: f32 = 10.;
 
 pub struct Level;
 
 impl SimpleState for Level {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
+
+        world.register::<Paddle>();
+        world.register::<Ball>();
 
         initialize_camera(world);
         initialize_pad(world);
@@ -44,11 +42,14 @@ fn initialize_pad(world: &mut World) {
     let mut trans = Transform::default();
     trans.set_xyz(SCREEN_WIDTH / 2. - PADDLE_WIDTH / 2., PADDLE_HEIGHT + PADDLE_OFFSET, 0.);
 
+    let pad = Paddle { width: PADDLE_WIDTH, height: PADDLE_WIDTH };
+
     world
         .create_entity()
         .with(pad_mesh)
         .with(pad_material)
         .with(trans)
+        .with(pad)
         .build();
 }
 
@@ -60,10 +61,13 @@ fn initialize_ball(world: &mut World) {
     let mut trans = Transform::default();
     trans.set_xyz(SCREEN_WIDTH / 2. - BALL_RADIUS, SCREEN_HEIGHT / 2. - BALL_RADIUS, 0.);
 
+    let ball = Ball { radius: BALL_RADIUS };
+
     world
         .create_entity()
         .with(pad_mesh)
         .with(pad_material)
         .with(trans)
+        .with(ball)
         .build();
 }
