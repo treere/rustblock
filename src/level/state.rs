@@ -42,7 +42,7 @@ fn initialize_pad(world: &mut World) {
     let mut trans = Transform::default();
     trans.set_xyz(SCREEN_WIDTH / 2. - PADDLE_WIDTH / 2., PADDLE_HEIGHT + PADDLE_OFFSET, 0.);
 
-    let pad = Paddle { width: PADDLE_WIDTH, height: PADDLE_WIDTH, speed: PADDLE_SPEED };
+    let pad = Paddle { width: PADDLE_WIDTH, height: PADDLE_HEIGHT, speed: PADDLE_SPEED };
 
     world
         .create_entity()

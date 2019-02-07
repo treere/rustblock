@@ -4,8 +4,8 @@ use amethyst::{
     input::InputHandler,
 };
 
-use crate::level::SCREEN_WIDTH;
 use crate::level::component::Paddle;
+use crate::level::SCREEN_WIDTH;
 
 pub struct PaddleSystem;
 
@@ -21,7 +21,6 @@ impl<'s> System<'s> for PaddleSystem {
             let movement = input.axis_value("move");
 
             if let Some(mv_amount) = movement {
-                println!("{:?}", mv_amount);
                 let scaled_amount = paddle.speed * mv_amount as f32;
                 let paddle_x = transform.translation().x;
                 transform.set_x(
