@@ -25,7 +25,8 @@ fn main() -> amethyst::Result<()> {
     let game_data = GameDataBuilder::default()
         .with_basic_renderer(config, DrawFlat::<PosTex>::new(), true)?
         .with_bundle(TransformBundle::new())?
-        .with(level::system::MoveBallSysytem, "move_ball_system", &[]);
+        .with(level::system::MoveBallSysytem, "move_ball", &[])
+        .with(level::system::BounceBall, "bounce_ball", &["move_ball"]);
 
     let mut game = Application::build("./", Level)?
         .with_frame_limit(
