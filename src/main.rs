@@ -34,7 +34,8 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(input_bundle)?
         .with(level::system::MoveBallSysytem, "move_ball", &[])
         .with(level::system::PaddleSystem, "paddle_system", &[])
-        .with(level::system::BounceBall, "bounce_ball", &["move_ball"]);
+        .with(level::system::BouncePaddle, "bounce_paddle", &["move_ball"])
+        .with(level::system::BounceBlock, "bounce_block", &["move_ball"]);
 
     let mut game = Application::build("./", Level)?
         .with_frame_limit(

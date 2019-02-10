@@ -9,6 +9,7 @@ use crate::level::SCREEN_WIDTH;
 
 pub struct PaddleSystem;
 
+
 impl<'s> System<'s> for PaddleSystem {
     type SystemData = (
         WriteStorage<'s, Transform>,

@@ -1,9 +1,11 @@
 pub use self::{
     ball::Ball,
-    paddle::Paddle
+    block::Block,
+    paddle::Paddle,
 };
 
 mod ball;
 
 mod paddle;
 
+mod block;

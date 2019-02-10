@@ -18,8 +18,7 @@ impl<'s> System<'s> for MoveBallSysytem {
     fn run(&mut self, (balls, mut transforms, time): Self::SystemData) {
         for (ball, transform) in (&balls, &mut transforms).join() {
             let delta = time.delta_seconds();
-            transform.translate_x(ball.vel_x * delta);
-            transform.translate_y(ball.vel_y * delta);
+            transform.move_global(delta * ball.vel);
         }
     }
 }
