@@ -4,7 +4,7 @@ use amethyst::{
     renderer::{Camera, Projection},
 };
 
-use super::{BALL_RADIUS, BALL_SPEED, PADDLE_HEIGHT, PADDLE_OFFSET, PADDLE_SPEED, PADDLE_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH};
+use super::{BALL_RADIUS, BALL_SPEED, BLOCK_HEIGHT, BLOCK_WIDTH, PADDLE_HEIGHT, PADDLE_OFFSET, PADDLE_SPEED, PADDLE_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH};
 use super::component::{Ball, Block, Paddle};
 use super::util::*;
 
@@ -75,20 +75,28 @@ fn initialize_ball(world: &mut World) {
 }
 
 fn initialize_block(world: &mut World) {
-    let pad_mesh = create_mesh(world, generate_rectangle_vertices(0.0, 0.0, SCREEN_WIDTH - 20., PADDLE_HEIGHT));
+    let width_off = (SCREEN_WIDTH - 10f32 * BLOCK_WIDTH) / 11f32;
+    for rows in 0..10 {
+        for cols in 0..3 {
+            let pad_mesh = create_mesh(world, generate_rectangle_vertices(0.0, 0.0, BLOCK_WIDTH, BLOCK_HEIGHT));
 
-    let pad_material = create_colour_material(world, [1., 0., 1., 1.]);
+            let pad_material = create_colour_material(world, [1., 0., 1., 1.]);
 
-    let mut trans = Transform::default();
-    trans.set_xyz(10f32, SCREEN_HEIGHT - PADDLE_HEIGHT - PADDLE_OFFSET, 0.);
+            let mut trans = Transform::default();
 
-    let block = Block { width: SCREEN_WIDTH - 20., height: PADDLE_HEIGHT };
+            let x = width_off + (BLOCK_WIDTH + width_off) * (rows as f32);
+            let y = 400f32 + (cols as f32) * (BLOCK_HEIGHT + 10f32);
+            trans.set_xyz(x, y, 0.);
 
-    world
-        .create_entity()
-        .with(pad_mesh)
-        .with(pad_material)
-        .with(trans)
-        .with(block)
-        .build();
+            let block = Block { width: BLOCK_WIDTH, height: BLOCK_HEIGHT };
+
+            world
+                .create_entity()
+                .with(pad_mesh)
+                .with(pad_material)
+                .with(trans)
+                .with(block)
+                .build();
+        }
+    }
 }

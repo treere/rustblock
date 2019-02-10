@@ -8,6 +8,8 @@ pub const PADDLE_HEIGHT: f32 = 10.;
 pub const PADDLE_OFFSET: f32 = 10.;
 pub const BALL_SPEED: f32 = 200.;
 pub const PADDLE_SPEED: f32 = 6.;
+pub const BLOCK_WIDTH: f32 = 50.;
+pub const BLOCK_HEIGHT: f32 = 13.;
 
 mod util;
 mod state;
