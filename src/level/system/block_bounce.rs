@@ -1,13 +1,41 @@
 use amethyst::{
     core::transform::Transform,
-    ecs::prelude::{Entities, Join, Read, ReadStorage, System, WriteStorage},
-    renderer::Material
+    ecs::prelude::{Entities, Join, ReadStorage, System, WriteStorage},
 };
 
-use crate::level::component::{Ball, Block};
-use crate::level::resources::MaterialVector;
+use crate::level::component::{Ball, Block, Bounced};
 
-// FIXME: refactor some-way
+pub struct BounceBlock;
+
+
+impl<'s> System<'s> for BounceBlock {
+    type SystemData = (
+        Entities<'s>,
+        WriteStorage<'s, Ball>,
+        WriteStorage<'s, Block>,
+        ReadStorage<'s, Transform>,
+        WriteStorage<'s, Bounced>,
+    );
+
+    fn run(&mut self, (entities, mut balls, mut blocks, transforms, mut bounc): Self::SystemData) {
+        for (ball, transform) in (&mut balls, &transforms).join() {
+            for (block, transformb, entity) in (&mut blocks, &transforms, &entities).join() {
+                match bounce(transformb, transform, ball, block) {
+                    (false, _) => (),
+                    (true, vertical) => {
+                        if vertical {
+                            ball.vel[1] = -ball.vel[1];
+                        } else {
+                            ball.vel[0] = -ball.vel[0];
+                        }
+                        bounc.insert(entity, Bounced).unwrap();
+                    }
+                }
+            }
+        }
+    }
+}
+
 fn bounce(paddle_transform: &Transform, ball_transform: &Transform, ball: &mut Ball, paddle: &Block) -> (bool, bool) {
     let paddle_pos = paddle_transform.translation();
     let ball_pos = ball_transform.translation();
@@ -50,45 +78,4 @@ fn bounce(paddle_transform: &Transform, ball_transform: &Transform, ball: &mut B
         return (true, x1 || x2);
     }
     return (false, false);
-}
-
-pub struct BounceBlock;
-
-
-impl<'s> System<'s> for BounceBlock {
-    type SystemData = (
-        Entities<'s>,
-        WriteStorage<'s, Ball>,
-        WriteStorage<'s, Block>,
-        ReadStorage<'s, Transform>,
-        WriteStorage<'s, Material>,
-        Read<'s, MaterialVector>
-    );
-
-    fn run(&mut self, (entities, mut balls, mut blocks, transforms, mut mat, matvec): Self::SystemData) {
-        for (ball, transform) in (&mut balls, &transforms).join() {
-            for (block, transformb, entity) in (&mut blocks, &transforms, &entities).join() {
-                match bounce(transformb, transform, ball, block) {
-                    (false, _) => (),
-                    (true, vertical) => {
-                        if vertical {
-                            ball.vel[1] = -ball.vel[1];
-                        } else {
-                            ball.vel[0] = -ball.vel[0];
-                        }
-                        if block.life > 0 {
-                            block.life -= 1;
-                        }
-                        if block.life == 0 {
-                            entities.delete(entity).unwrap();
-                        } else {
-                            mat.remove(entity).unwrap();
-                            let color = matvec.lifes[block.life as usize + 1].clone();
-                            mat.insert(entity, color).unwrap();
-                        }
-                    }
-                }
-            }
-        }
-    }
 }

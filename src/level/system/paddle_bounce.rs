@@ -7,7 +7,23 @@ use crate::level::component::{Ball, Paddle};
 
 pub struct BouncePaddle;
 
-// FIXME: refactor some-way
+
+impl<'s> System<'s> for BouncePaddle {
+    type SystemData = (
+        WriteStorage<'s, Ball>,
+        ReadStorage<'s, Paddle>,
+        ReadStorage<'s, Transform>
+    );
+
+    fn run(&mut self, (mut balls, paddles, transforms): Self::SystemData) {
+        for (ball, transform) in (&mut balls, &transforms).join() {
+            for (paddle, transformp) in (&paddles, &transforms).join() {
+                bounce(transformp, transform, ball, paddle);
+            }
+        }
+    }
+}
+
 fn bounce(paddle_transform: &Transform, ball_transform: &Transform, ball: &mut Ball, paddle: &Paddle) {
     let paddle_pos = paddle_transform.translation();
     let ball_pos = ball_transform.translation();
@@ -52,22 +68,6 @@ fn bounce(paddle_transform: &Transform, ball_transform: &Transform, ball: &mut B
             ball.vel[1] = -ball.vel[1];
         } else {
             ball.vel[0] = -ball.vel[0];
-        }
-    }
-}
-
-impl<'s> System<'s> for BouncePaddle {
-    type SystemData = (
-        WriteStorage<'s, Ball>,
-        ReadStorage<'s, Paddle>,
-        ReadStorage<'s, Transform>
-    );
-
-    fn run(&mut self, (mut balls, paddles, transforms): Self::SystemData) {
-        for (ball, transform) in (&mut balls, &transforms).join() {
-            for (paddle, transformp) in (&paddles, &transforms).join() {
-                bounce(transformp, transform, ball, paddle);
-            }
         }
     }
 }

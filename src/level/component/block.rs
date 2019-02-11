@@ -1,4 +1,4 @@
-use amethyst::ecs::prelude::{Component, DenseVecStorage};
+use amethyst::ecs::prelude::{Component, DenseVecStorage, NullStorage};
 
 pub struct Block {
     pub width: f32,
@@ -8,4 +8,11 @@ pub struct Block {
 
 impl Component for Block {
     type Storage = DenseVecStorage<Self>;
+}
+
+#[derive(Default)]
+pub struct Bounced;
+
+impl Component for Bounced {
+    type Storage = NullStorage<Self>;
 }

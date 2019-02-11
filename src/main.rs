@@ -36,11 +36,12 @@ fn main() -> amethyst::Result<()> {
         .with(level::system::PaddleSystem, "paddle_system", &[])
         .with(level::system::BouncePaddle, "bounce_paddle", &["move_ball"])
         .with(level::system::BounceBlock, "bounce_block", &["move_ball"])
-        .with(level::system::BounceWall, "bounce_wall", &["move_ball"]);
+        .with(level::system::BounceWall, "bounce_wall", &["move_ball"])
+        .with(level::system::BouncedBlock, "bounced_block", &["bounce_block"]);
 
     let mut game = Application::build("./", Level)?
         .with_frame_limit(
-            FrameRateLimitStrategy::SleepAndYield(Duration::from_millis(2)),
+            FrameRateLimitStrategy::SleepAndYield(Duration::from_millis(1)),
             60,
         )
         .build(game_data)?;

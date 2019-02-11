@@ -15,30 +15,14 @@ impl SimpleState for Level {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
-        world.register::<Paddle>();
-        world.register::<Ball>();
-        world.register::<Block>();
-
-        let m = MaterialVector {
-            pad: Some(create_colour_material(world, [0., 0., 1., 1.])),
-            ball: Some(create_colour_material(world, [0.5, 0.5, 0.5, 0.5])),
-            lifes: vec![
-                create_colour_material(world, [1., 0., 1., 1.]),
-                create_colour_material(world, [1., 1., 1., 1.]),
-                create_colour_material(world, [0., 1., 1., 1.]),
-                create_colour_material(world, [1., 1., 0., 1.]),
-                create_colour_material(world, [1., 0., 0., 1.])
-            ]
-        };
-
-        world.add_resource(m);
-
+        initialize_colors(world);
         initialize_camera(world);
         initialize_pad(world);
         initialize_ball(world);
         initialize_block(world);
     }
 }
+
 
 fn initialize_camera(world: &mut World) {
     let mut transform = Transform::default();
@@ -56,7 +40,7 @@ fn initialize_pad(world: &mut World) {
 
     let pad_material = {
         let m = world.read_resource::<MaterialVector>();
-        m.pad.clone().unwrap()
+        m.pad.clone()
     };
 
     let mut trans = Transform::default();
@@ -78,7 +62,7 @@ fn initialize_ball(world: &mut World) {
 
     let pad_material = {
         let m = world.read_resource::<MaterialVector>();
-        m.ball.clone().unwrap()
+        m.ball.clone()
     };
 
     let mut trans = Transform::default();
@@ -125,3 +109,20 @@ fn initialize_block(world: &mut World) {
         }
     }
 }
+
+
+fn initialize_colors(world: &mut World) {
+    let m = MaterialVector {
+        pad: create_colour_material(world, [0., 0., 1., 1.]),
+        ball: create_colour_material(world, [0.5, 0.5, 0.5, 0.5]),
+        lifes: vec![
+            create_colour_material(world, [1., 0., 1., 1.]),
+            create_colour_material(world, [1., 1., 1., 1.]),
+            create_colour_material(world, [0., 1., 1., 1.]),
+            create_colour_material(world, [1., 1., 0., 1.]),
+            create_colour_material(world, [1., 0., 0., 1.])
+        ]
+    };
+    world.add_resource(m);
+}
+

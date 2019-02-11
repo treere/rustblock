@@ -1,6 +1,6 @@
 pub use self::{
     ball::Ball,
-    block::Block,
+    block::{Block, Bounced},
     paddle::Paddle,
 };
 
