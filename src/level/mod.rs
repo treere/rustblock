@@ -15,3 +15,4 @@ mod util;
 mod state;
 mod component;
 pub mod system;
+mod resources;
