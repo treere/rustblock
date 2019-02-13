@@ -1,6 +1,6 @@
 use amethyst::{
     ecs::prelude::{Entities, Join, ReadExpect, System, WriteStorage},
-    renderer::Material
+    renderer::Material,
 };
 
 use crate::level::component::{Block, Bounced};
@@ -8,14 +8,13 @@ use crate::level::resources::MaterialVector;
 
 pub struct BouncedBlock;
 
-
 impl<'s> System<'s> for BouncedBlock {
     type SystemData = (
         Entities<'s>,
         WriteStorage<'s, Block>,
         WriteStorage<'s, Bounced>,
         WriteStorage<'s, Material>,
-        ReadExpect<'s, MaterialVector>
+        ReadExpect<'s, MaterialVector>,
     );
 
     fn run(&mut self, (entities, mut blocks, mut bounced, mut mat, matvec): Self::SystemData) {

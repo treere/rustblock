@@ -7,7 +7,6 @@ use crate::level::component::{Ball, Block, Bounced};
 
 pub struct BounceBlock;
 
-
 impl<'s> System<'s> for BounceBlock {
     type SystemData = (
         Entities<'s>,
@@ -36,7 +35,12 @@ impl<'s> System<'s> for BounceBlock {
     }
 }
 
-fn bounce(paddle_transform: &Transform, ball_transform: &Transform, ball: &mut Ball, paddle: &Block) -> (bool, bool) {
+fn bounce(
+    paddle_transform: &Transform,
+    ball_transform: &Transform,
+    ball: &mut Ball,
+    paddle: &Block,
+) -> (bool, bool) {
     let paddle_pos = paddle_transform.translation();
     let ball_pos = ball_transform.translation();
     let y = ball_pos.y;
@@ -49,18 +53,10 @@ fn bounce(paddle_transform: &Transform, ball_transform: &Transform, ball: &mut B
     let p = ball_pos;
     let v = ball.vel;
 
-    let bot = {
-        y > bot_value
-    };
-    let top = {
-        y < top_value
-    };
-    let left = {
-        x > left_value
-    };
-    let right = {
-        x < right_value
-    };
+    let bot = { y > bot_value };
+    let top = { y < top_value };
+    let left = { x > left_value };
+    let right = { x < right_value };
 
     if bot & &top & &left && right {
         let a = left_value;

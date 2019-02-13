@@ -3,7 +3,7 @@ use amethyst::ecs::prelude::{Component, DenseVecStorage, NullStorage};
 pub struct Block {
     pub width: f32,
     pub height: f32,
-    pub life: i32
+    pub life: i32,
 }
 
 impl Component for Block {

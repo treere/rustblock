@@ -1,11 +1,11 @@
 use amethyst::{
     core::{nalgebra::Vector3, Transform},
     prelude::*,
-    renderer::{Camera, Projection},
+    renderer::{Camera, DisplayConfig, Projection},
 };
 
-use super::{BALL_RADIUS, BALL_SPEED, BLOCK_HEIGHT, BLOCK_WIDTH, PADDLE_HEIGHT, PADDLE_OFFSET, PADDLE_SPEED, PADDLE_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH};
 use super::component::{Ball, Block, Paddle};
+use super::config::{BallConfig, BlockConfig, PaddleConfig};
 use super::resources::MaterialVector;
 use super::util::*;
 
@@ -23,20 +23,32 @@ impl SimpleState for Level {
     }
 }
 
-
 fn initialize_camera(world: &mut World) {
+    let (width, height) = {
+        let conf = world.read_resource::<DisplayConfig>();
+        let (w, h) = conf.dimensions.clone().unwrap();
+        (w as f32, h as f32)
+    };
+
     let mut transform = Transform::default();
 
     transform.set_z(1.0);
     world
         .create_entity()
-        .with(Camera::from(Projection::orthographic(0.0, SCREEN_WIDTH, 0.0, SCREEN_HEIGHT)))
+        .with(Camera::from(Projection::orthographic(
+            0.0, width, 0.0, height,
+        )))
         .with(transform)
         .build();
 }
 
 fn initialize_pad(world: &mut World) {
-    let pad_mesh = create_mesh(world, generate_rectangle_vertices(0.0, 0.0, PADDLE_WIDTH, PADDLE_HEIGHT));
+    let (width, height, offset, speed) = {
+        let config = world.read_resource::<PaddleConfig>();
+        (config.width, config.height, config.offset, config.speed)
+    };
+
+    let pad_mesh = create_mesh(world, generate_rectangle_vertices(0.0, 0.0, width, height));
 
     let pad_material = {
         let m = world.read_resource::<MaterialVector>();
@@ -44,9 +56,17 @@ fn initialize_pad(world: &mut World) {
     };
 
     let mut trans = Transform::default();
-    trans.set_xyz(SCREEN_WIDTH / 2. - PADDLE_WIDTH / 2., PADDLE_HEIGHT + PADDLE_OFFSET, 0.);
+    {
+        let conf = world.read_resource::<DisplayConfig>();
+        let (w, _) = conf.dimensions.clone().unwrap();
+        trans.set_xyz((w as f32) / 2. - width / 2., height + offset, 0.);
+    }
 
-    let pad = Paddle { width: PADDLE_WIDTH, height: PADDLE_HEIGHT, speed: PADDLE_SPEED };
+    let pad = Paddle {
+        width: width,
+        height: height,
+        speed: speed,
+    };
 
     world
         .create_entity()
@@ -58,7 +78,12 @@ fn initialize_pad(world: &mut World) {
 }
 
 fn initialize_ball(world: &mut World) {
-    let pad_mesh = create_mesh(world, generate_circle_vertices(BALL_RADIUS, 16));
+    let (speed, radius) = {
+        let config = world.read_resource::<BallConfig>();
+        (config.speed, config.radius)
+    };
+
+    let pad_mesh = create_mesh(world, generate_circle_vertices(radius, 16));
 
     let pad_material = {
         let m = world.read_resource::<MaterialVector>();
@@ -66,9 +91,16 @@ fn initialize_ball(world: &mut World) {
     };
 
     let mut trans = Transform::default();
-    trans.set_xyz(SCREEN_WIDTH / 2. - BALL_RADIUS, SCREEN_HEIGHT / 2. - BALL_RADIUS, 0.);
+    {
+        let conf = world.read_resource::<DisplayConfig>();
+        let (w, h) = conf.dimensions.clone().unwrap();
+        trans.set_xyz((w as f32) / 2. - radius, (h as f32) / 2. - radius, 0.);
+    };
 
-    let ball = Ball { radius: BALL_RADIUS, vel: Vector3::new(BALL_SPEED, BALL_SPEED, 0f32) };
+    let ball = Ball {
+        radius: radius,
+        vel: Vector3::new(speed, speed, 0f32),
+    };
 
     world
         .create_entity()
@@ -80,10 +112,19 @@ fn initialize_ball(world: &mut World) {
 }
 
 fn initialize_block(world: &mut World) {
-    let width_off = (SCREEN_WIDTH - 10f32 * BLOCK_WIDTH) / 11f32;
+    let (width, height) = {
+        let config = world.read_resource::<BlockConfig>();
+        (config.width, config.height)
+    };
+    let width_off = {
+        let conf = world.read_resource::<DisplayConfig>();
+        let (w, _) = conf.dimensions.clone().unwrap();
+
+        ((w as f32) - 10f32 * width) / 11f32
+    };
     for rows in 0..10 {
         for cols in 0..3 {
-            let pad_mesh = create_mesh(world, generate_rectangle_vertices(0.0, 0.0, BLOCK_WIDTH, BLOCK_HEIGHT));
+            let pad_mesh = create_mesh(world, generate_rectangle_vertices(0.0, 0.0, width, height));
 
             let life = cols + 1;
             let block_material = {
@@ -93,11 +134,15 @@ fn initialize_block(world: &mut World) {
 
             let mut trans = Transform::default();
 
-            let x = width_off + (BLOCK_WIDTH + width_off) * (rows as f32);
-            let y = 400f32 + (cols as f32) * (BLOCK_HEIGHT + 10f32);
+            let x = width_off + (width + width_off) * (rows as f32);
+            let y = 400f32 + (cols as f32) * (height + 10f32);
             trans.set_xyz(x, y, 0.);
 
-            let block = Block { width: BLOCK_WIDTH, height: BLOCK_HEIGHT, life: life as i32 };
+            let block = Block {
+                width: width,
+                height: height,
+                life: life as i32,
+            };
 
             world
                 .create_entity()
@@ -110,7 +155,6 @@ fn initialize_block(world: &mut World) {
     }
 }
 
-
 fn initialize_colors(world: &mut World) {
     let m = MaterialVector {
         pad: create_colour_material(world, [0., 0., 1., 1.]),
@@ -120,9 +164,8 @@ fn initialize_colors(world: &mut World) {
             create_colour_material(world, [1., 1., 1., 1.]),
             create_colour_material(world, [0., 1., 1., 1.]),
             create_colour_material(world, [1., 1., 0., 1.]),
-            create_colour_material(world, [1., 0., 0., 1.])
-        ]
+            create_colour_material(world, [1., 0., 0., 1.]),
+        ],
     };
     world.add_resource(m);
 }
-

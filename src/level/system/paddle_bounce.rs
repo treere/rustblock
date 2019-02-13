@@ -7,12 +7,11 @@ use crate::level::component::{Ball, Paddle};
 
 pub struct BouncePaddle;
 
-
 impl<'s> System<'s> for BouncePaddle {
     type SystemData = (
         WriteStorage<'s, Ball>,
         ReadStorage<'s, Paddle>,
-        ReadStorage<'s, Transform>
+        ReadStorage<'s, Transform>,
     );
 
     fn run(&mut self, (mut balls, paddles, transforms): Self::SystemData) {
@@ -24,7 +23,12 @@ impl<'s> System<'s> for BouncePaddle {
     }
 }
 
-fn bounce(paddle_transform: &Transform, ball_transform: &Transform, ball: &mut Ball, paddle: &Paddle) {
+fn bounce(
+    paddle_transform: &Transform,
+    ball_transform: &Transform,
+    ball: &mut Ball,
+    paddle: &Paddle,
+) {
     let paddle_pos = paddle_transform.translation();
     let ball_pos = ball_transform.translation();
     let y = ball_pos.y;
@@ -37,18 +41,10 @@ fn bounce(paddle_transform: &Transform, ball_transform: &Transform, ball: &mut B
     let p = ball_pos;
     let v = ball.vel;
 
-    let bot = {
-        y > bot_value
-    };
-    let top = {
-        y < top_value
-    };
-    let left = {
-        x > left_value
-    };
-    let right = {
-        x < right_value
-    };
+    let bot = { y > bot_value };
+    let top = { y < top_value };
+    let left = { x > left_value };
+    let right = { x < right_value };
 
     if bot & &top & &left && right {
         let a = left_value;
