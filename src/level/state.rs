@@ -1,25 +1,55 @@
 use amethyst::{
     core::{nalgebra::Vector3, Transform},
+    input::{is_close_requested, is_key_down},
     prelude::*,
-    renderer::{Camera, DisplayConfig, Projection},
+    renderer::{Camera, DisplayConfig, Projection, VirtualKeyCode},
 };
 
 use super::component::{Ball, Block, Paddle};
 use super::config::{BallConfig, BlockConfig, PaddleConfig};
 use super::resources::MaterialVector;
 use super::util::*;
+use crate::dispatcher::CustomGameData;
 
 pub struct Level;
 
-impl SimpleState for Level {
-    fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Level {
+    fn on_start(&mut self, data: StateData<'_, CustomGameData<'_, '_>>) {
         let world = data.world;
+
+        world.register::<Paddle>();
+        world.register::<Ball>();
+        world.register::<Block>();
 
         initialize_colors(world);
         initialize_camera(world);
         initialize_pad(world);
         initialize_ball(world);
         initialize_block(world);
+    }
+
+    fn update(
+        &mut self,
+        data: StateData<CustomGameData>,
+    ) -> Trans<CustomGameData<'a, 'b>, StateEvent> {
+        data.data.update(&data.world, true);
+        Trans::None
+    }
+
+    fn handle_event(
+        &mut self,
+        _data: StateData<CustomGameData>,
+        event: StateEvent,
+    ) -> Trans<CustomGameData<'a, 'b>, StateEvent> {
+        if let StateEvent::Window(event) = &event {
+            if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
+                Trans::Quit
+            } else {
+                Trans::None
+            }
+        } else {
+            Trans::None
+        }
     }
 }
 

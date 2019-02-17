@@ -16,6 +16,8 @@ use amethyst::{
 use level::config::*;
 use level::Level;
 
+mod dispatcher;
+use dispatcher::CustomGameDataBuilder;
 mod level;
 
 fn main() -> amethyst::Result<()> {
@@ -39,16 +41,16 @@ fn main() -> amethyst::Result<()> {
         DisplayConfig::load(display_config)
     };
 
-    let game_data = GameDataBuilder::default()
-        .with_bundle(RenderBundle::new(pipe, Some(display_config.clone())))?
-        .with_bundle(TransformBundle::new())?
-        .with_bundle(input_bundle)?
-        .with(level::system::MoveBallSysytem, "move_ball", &[])
-        .with(level::system::PaddleSystem, "paddle_system", &[])
-        .with(level::system::BouncePaddle, "bounce_paddle", &["move_ball"])
-        .with(level::system::BounceBlock, "bounce_block", &["move_ball"])
-        .with(level::system::BounceWall, "bounce_wall", &["move_ball"])
-        .with(
+    let game_data = CustomGameDataBuilder::default()
+        .with_base_bundle(RenderBundle::new(pipe, Some(display_config.clone())))?
+        .with_base_bundle(TransformBundle::new())?
+        .with_base_bundle(input_bundle)?
+        .with_running(level::system::MoveBallSysytem, "move_ball", &[])
+        .with_running(level::system::PaddleSystem, "paddle_system", &[])
+        .with_running(level::system::BouncePaddle, "bounce_paddle", &["move_ball"])
+        .with_running(level::system::BounceBlock, "bounce_block", &["move_ball"])
+        .with_running(level::system::BounceWall, "bounce_wall", &["move_ball"])
+        .with_running(
             level::system::BouncedBlock,
             "bounced_block",
             &["bounce_block"],

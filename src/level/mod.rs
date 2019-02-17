@@ -1,5 +1,4 @@
 pub use self::state::Level;
-
 mod component;
 pub mod config;
 mod resources;
