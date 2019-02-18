@@ -15,15 +15,13 @@ use amethyst::{
 
 mod component;
 mod config;
-mod state;
+mod dispatcher;
+mod intro;
+mod level;
+mod pause;
+mod resources;
 mod system;
 mod util;
-mod resources;
-use config::*;
-use state::Level;
-
-mod dispatcher;
-use dispatcher::CustomGameDataBuilder;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -46,7 +44,7 @@ fn main() -> amethyst::Result<()> {
         DisplayConfig::load(display_config)
     };
 
-    let game_data = CustomGameDataBuilder::default()
+    let game_data = dispatcher::CustomGameDataBuilder::default()
         .with_base_bundle(RenderBundle::new(pipe, Some(display_config.clone())))?
         .with_base_bundle(TransformBundle::new())?
         .with_base_bundle(input_bundle)?
@@ -55,17 +53,13 @@ fn main() -> amethyst::Result<()> {
         .with_running(system::BouncePaddle, "bounce_paddle", &["move_ball"])
         .with_running(system::BounceBlock, "bounce_block", &["move_ball"])
         .with_running(system::BounceWall, "bounce_wall", &["move_ball"])
-        .with_running(
-            system::BouncedBlock,
-            "bounced_block",
-            &["bounce_block"],
-        );
+        .with_running(system::BouncedBlock, "bounced_block", &["bounce_block"]);
 
-    let mut game = Application::build("./", Level)?
+    let mut game = Application::build("./", intro::Intro)?
         .with_resource(display_config)
-        .with_resource(PaddleConfig::default())
-        .with_resource(BallConfig::default())
-        .with_resource(BlockConfig::default())
+        .with_resource(config::PaddleConfig::default())
+        .with_resource(config::BallConfig::default())
+        .with_resource(config::BlockConfig::default())
         .with_frame_limit(
             FrameRateLimitStrategy::SleepAndYield(Duration::from_millis(1)),
             30,

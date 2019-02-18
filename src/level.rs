@@ -7,9 +7,10 @@ use amethyst::{
 
 use crate::component::{Ball, Block, Paddle};
 use crate::config::{BallConfig, BlockConfig, PaddleConfig};
+use crate::dispatcher::CustomGameData;
+use crate::pause::Pause;
 use crate::resources::MaterialVector;
 use crate::util::*;
-use crate::dispatcher::CustomGameData;
 
 pub struct Level;
 
@@ -44,6 +45,8 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Level {
         if let StateEvent::Window(event) = &event {
             if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
                 Trans::Quit
+            } else if is_key_down(&event, VirtualKeyCode::P) {
+                Trans::Push(Box::new(Pause))
             } else {
                 Trans::None
             }
