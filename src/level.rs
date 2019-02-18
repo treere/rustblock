@@ -46,7 +46,7 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Level {
             if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
                 Trans::Quit
             } else if is_key_down(&event, VirtualKeyCode::P) {
-                Trans::Push(Box::new(Pause))
+                Trans::Push(Box::new(Pause { ui: None }))
             } else {
                 Trans::None
             }
