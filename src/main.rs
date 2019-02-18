@@ -9,8 +9,9 @@ use amethyst::{
     input::InputBundle,
     prelude::*,
     renderer::{DisplayConfig, DrawFlat, Pipeline, PosTex, RenderBundle, Stage},
-    ui::DrawUi,
+    ui::{DrawUi, UiBundle},
     utils::application_root_dir,
+    LoggerConfig, StdoutLog,
 };
 
 mod component;
@@ -24,7 +25,10 @@ mod system;
 mod util;
 
 fn main() -> amethyst::Result<()> {
-    amethyst::start_logger(Default::default());
+    amethyst::start_logger(LoggerConfig {
+        stdout: StdoutLog::Plain,
+        ..Default::default()
+    });
 
     let app_root = application_root_dir();
 
@@ -48,6 +52,7 @@ fn main() -> amethyst::Result<()> {
         .with_base_bundle(RenderBundle::new(pipe, Some(display_config.clone())))?
         .with_base_bundle(TransformBundle::new())?
         .with_base_bundle(input_bundle)?
+        .with_base_bundle(UiBundle::<String, String>::new())?
         .with_running(system::MoveBallSysytem, "move_ball", &[])
         .with_running(system::PaddleSystem, "paddle_system", &[])
         .with_running(system::BouncePaddle, "bounce_paddle", &["move_ball"])
@@ -55,7 +60,7 @@ fn main() -> amethyst::Result<()> {
         .with_running(system::BounceWall, "bounce_wall", &["move_ball"])
         .with_running(system::BouncedBlock, "bounced_block", &["bounce_block"]);
 
-    let mut game = Application::build("./", intro::Intro)?
+    let mut game = Application::build("./", intro::Intro { ui: None })?
         .with_resource(display_config)
         .with_resource(config::PaddleConfig::default())
         .with_resource(config::BallConfig::default())

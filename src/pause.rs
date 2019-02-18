@@ -5,7 +5,6 @@ use amethyst::{
 };
 
 use crate::dispatcher::CustomGameData;
-use crate::level::Level;
 
 pub struct Pause;
 
