@@ -3,7 +3,7 @@ use amethyst::{
     ecs::prelude::{Entities, Join, ReadStorage, System, WriteStorage},
 };
 
-use crate::level::component::{Ball, Block, Bounced};
+use crate::component::{Ball, Block, Bounced};
 
 pub struct BounceBlock;
 

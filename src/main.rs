@@ -13,12 +13,17 @@ use amethyst::{
     utils::application_root_dir,
 };
 
-use level::config::*;
-use level::Level;
+mod component;
+mod config;
+mod state;
+mod system;
+mod util;
+mod resources;
+use config::*;
+use state::Level;
 
 mod dispatcher;
 use dispatcher::CustomGameDataBuilder;
-mod level;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -45,13 +50,13 @@ fn main() -> amethyst::Result<()> {
         .with_base_bundle(RenderBundle::new(pipe, Some(display_config.clone())))?
         .with_base_bundle(TransformBundle::new())?
         .with_base_bundle(input_bundle)?
-        .with_running(level::system::MoveBallSysytem, "move_ball", &[])
-        .with_running(level::system::PaddleSystem, "paddle_system", &[])
-        .with_running(level::system::BouncePaddle, "bounce_paddle", &["move_ball"])
-        .with_running(level::system::BounceBlock, "bounce_block", &["move_ball"])
-        .with_running(level::system::BounceWall, "bounce_wall", &["move_ball"])
+        .with_running(system::MoveBallSysytem, "move_ball", &[])
+        .with_running(system::PaddleSystem, "paddle_system", &[])
+        .with_running(system::BouncePaddle, "bounce_paddle", &["move_ball"])
+        .with_running(system::BounceBlock, "bounce_block", &["move_ball"])
+        .with_running(system::BounceWall, "bounce_wall", &["move_ball"])
         .with_running(
-            level::system::BouncedBlock,
+            system::BouncedBlock,
             "bounced_block",
             &["bounce_block"],
         );

@@ -3,8 +3,8 @@ use amethyst::{
     renderer::Material,
 };
 
-use crate::level::component::{Block, Bounced};
-use crate::level::resources::MaterialVector;
+use crate::component::{Block, Bounced};
+use crate::resources::MaterialVector;
 
 pub struct BouncedBlock;
 

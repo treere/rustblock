@@ -5,7 +5,7 @@ use amethyst::{
     renderer::DisplayConfig,
 };
 
-use crate::level::component::Paddle;
+use crate::component::Paddle;
 
 pub struct PaddleSystem;
 

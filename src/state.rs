@@ -5,10 +5,10 @@ use amethyst::{
     renderer::{Camera, DisplayConfig, Projection, VirtualKeyCode},
 };
 
-use super::component::{Ball, Block, Paddle};
-use super::config::{BallConfig, BlockConfig, PaddleConfig};
-use super::resources::MaterialVector;
-use super::util::*;
+use crate::component::{Ball, Block, Paddle};
+use crate::config::{BallConfig, BlockConfig, PaddleConfig};
+use crate::resources::MaterialVector;
+use crate::util::*;
 use crate::dispatcher::CustomGameData;
 
 pub struct Level;

@@ -4,7 +4,7 @@ use amethyst::{
     ecs::prelude::{Join, Read, ReadStorage, System, WriteStorage},
 };
 
-use crate::level::component::Ball;
+use crate::component::Ball;
 
 pub struct MoveBallSysytem;
 

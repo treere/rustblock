@@ -4,7 +4,7 @@ use amethyst::{
     renderer::DisplayConfig,
 };
 
-use crate::level::component::Ball;
+use crate::component::Ball;
 
 pub struct BounceWall;
 
