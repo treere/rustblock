@@ -1,13 +1,15 @@
 use amethyst::{
     core::{nalgebra::Vector3, Transform},
+    ecs::Join,
     input::{is_close_requested, is_key_down},
     prelude::*,
     renderer::{Camera, DisplayConfig, Projection, VirtualKeyCode},
 };
 
-use crate::component::{Ball, Block, Paddle};
+use crate::component::{Ball, Block, LevelComponent, Paddle};
 use crate::config::{BallConfig, BlockConfig, PaddleConfig};
 use crate::dispatcher::CustomGameData;
+use crate::intro;
 use crate::pause::Pause;
 use crate::resources::MaterialVector;
 use crate::util::*;
@@ -21,6 +23,7 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Level {
         world.register::<Paddle>();
         world.register::<Ball>();
         world.register::<Block>();
+        world.register::<LevelComponent>();
 
         initialize_colors(world);
         initialize_camera(world);
@@ -34,7 +37,19 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Level {
         data: StateData<CustomGameData>,
     ) -> Trans<CustomGameData<'a, 'b>, StateEvent> {
         data.data.update(&data.world, true);
-        Trans::None
+        if data.world.read_storage::<Block>().is_empty() {
+            Trans::Switch(Box::new(intro::Intro { ui: None }))
+        } else {
+            Trans::None
+        }
+    }
+
+    fn on_stop(&mut self, data: StateData<CustomGameData>) {
+        let lc = data.world.read_storage::<LevelComponent>();
+        let ent = lc.fetched_entities();
+        for e in ent.join() {
+            ent.delete(e).expect("Cannot delete");
+        }
     }
 
     fn handle_event(
@@ -68,6 +83,7 @@ fn initialize_camera(world: &mut World) {
     transform.set_z(1.0);
     world
         .create_entity()
+        .with(LevelComponent)
         .with(Camera::from(Projection::orthographic(
             0.0, width, 0.0, height,
         )))
@@ -103,6 +119,7 @@ fn initialize_pad(world: &mut World) {
 
     world
         .create_entity()
+        .with(LevelComponent)
         .with(pad_mesh)
         .with(pad_material)
         .with(trans)
@@ -137,6 +154,7 @@ fn initialize_ball(world: &mut World) {
 
     world
         .create_entity()
+        .with(LevelComponent)
         .with(pad_mesh)
         .with(pad_material)
         .with(trans)
@@ -179,6 +197,7 @@ fn initialize_block(world: &mut World) {
 
             world
                 .create_entity()
+                .with(LevelComponent)
                 .with(pad_mesh)
                 .with(block_material)
                 .with(trans)

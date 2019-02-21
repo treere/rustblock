@@ -1,11 +1,11 @@
 pub use self::{
     ball::Ball,
     block::{Block, Bounced},
+    level::LevelComponent,
     paddle::Paddle,
 };
 
 mod ball;
-
-mod paddle;
-
 mod block;
+mod level;
+mod paddle;
