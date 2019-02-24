@@ -2,6 +2,7 @@ pub use self::{
     block_bounce::BounceBlock, block_bounced_transform::BouncedBlock, move_ball::MoveBallSysytem,
     paddle::PaddleSystem, paddle_bounce::BouncePaddle, wall_bounce::BounceWall,
 };
+mod bounce_util;
 
 mod block_bounce;
 mod block_bounced_transform;

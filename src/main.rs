@@ -1,4 +1,5 @@
 extern crate amethyst;
+extern crate ncollide2d;
 extern crate serde;
 
 use std::path::Path;

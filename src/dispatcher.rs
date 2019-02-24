@@ -1,7 +1,7 @@
 use amethyst::{
     core::bundle::{Result, SystemBundle},
     core::ArcThreadPool,
-    ecs::{Dispatcher, DispatcherBuilder, System},
+    ecs::{prelude::*, Dispatcher, DispatcherBuilder, System},
     prelude::*,
     Error,
 };
