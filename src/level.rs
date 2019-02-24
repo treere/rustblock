@@ -25,7 +25,6 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Level {
         world.register::<Block>();
         world.register::<LevelComponent>();
 
-        initialize_colors(world);
         initialize_camera(world);
         initialize_pad(world);
         initialize_ball(world);
@@ -205,19 +204,4 @@ fn initialize_block(world: &mut World) {
                 .build();
         }
     }
-}
-
-fn initialize_colors(world: &mut World) {
-    let m = MaterialVector {
-        pad: create_colour_material(world, [0., 0., 1., 1.]),
-        ball: create_colour_material(world, [0.5, 0.5, 0.5, 0.5]),
-        lifes: vec![
-            create_colour_material(world, [1., 0., 1., 1.]),
-            create_colour_material(world, [1., 1., 1., 1.]),
-            create_colour_material(world, [0., 1., 1., 1.]),
-            create_colour_material(world, [1., 1., 0., 1.]),
-            create_colour_material(world, [1., 0., 0., 1.]),
-        ],
-    };
-    world.add_resource(m);
 }

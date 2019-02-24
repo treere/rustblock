@@ -19,6 +19,7 @@ mod config;
 mod dispatcher;
 mod intro;
 mod level;
+mod loading;
 mod pause;
 mod resources;
 mod system;
@@ -60,7 +61,7 @@ fn main() -> amethyst::Result<()> {
         .with_running(system::BounceWall, "bounce_wall", &["move_ball"])
         .with_running(system::BouncedBlock, "bounced_block", &["bounce_block"]);
 
-    let mut game = Application::build("./", intro::Intro { ui: None })?
+    let mut game = Application::build("./", loading::Loading)?
         .with_resource(display_config)
         .with_resource(config::PaddleConfig::default())
         .with_resource(config::BallConfig::default())
