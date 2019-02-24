@@ -1,13 +1,18 @@
 use amethyst::core::transform::Transform;
 use ncollide2d::{math, query, shape};
 
+pub enum Collision {
+    Vertical,
+    Horizontal,
+}
+
 pub fn bounce(
     block_transform: &Transform,
     ball_transform: &Transform,
     radius: f32,
     width: f32,
     height: f32,
-) -> (bool, bool) {
+) -> Option<Collision> {
     let block_pos = block_transform.translation();
     let ball_pos = ball_transform.translation();
 
@@ -28,8 +33,12 @@ pub fn bounce(
     if let Some(collision) = query::contact(&isoblock, &block2d, &isoball, &ball2d, 0.2) {
         let normal = collision.normal.into_inner();
 
-        return (true, normal.y.abs() > 0.9);
+        if normal.y.abs() > 0.9 {
+            return Some(Collision::Vertical);
+        } else {
+            return Some(Collision::Horizontal);
+        }
     }
 
-    return (false, false);
+    None
 }

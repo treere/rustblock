@@ -3,7 +3,7 @@ use amethyst::{
     ecs::prelude::{Join, ReadStorage, System, WriteStorage},
 };
 
-use super::bounce_util::bounce;
+use super::bounce_util::{bounce, Collision};
 use crate::component::{Ball, Paddle};
 
 pub struct BouncePaddle;
@@ -25,14 +25,9 @@ impl<'s> System<'s> for BouncePaddle {
                     paddle.width,
                     paddle.height,
                 ) {
-                    (false, _) => (),
-                    (true, vertical) => {
-                        if vertical {
-                            ball.vel[1] = -ball.vel[1];
-                        } else {
-                            ball.vel[0] = -ball.vel[0];
-                        }
-                    }
+                    Some(Collision::Vertical) => ball.vel[1] = -ball.vel[1],
+                    Some(Collision::Horizontal) => ball.vel[0] = -ball.vel[0],
+                    _ => (),
                 }
             }
         }
