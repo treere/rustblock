@@ -59,8 +59,12 @@ fn main() -> amethyst::Result<()> {
         .with_running(system::PaddleSystem, "paddle_system", &[])
         .with_running(system::BouncePaddle, "bounce_paddle", &["move_ball"])
         .with_running(system::BounceBlock, "bounce_block", &["move_ball"])
-        .with_running(system::BounceWall, "bounce_wall", &["move_ball"])
-        .with_running(system::BouncedBlock, "bounced_block", &["bounce_block"]);
+        .with_running(system::BouncedBlock, "bounced_block", &["bounce_block"])
+        .with_running(
+            system::BounceWall,
+            "bounce_wall",
+            &["move_ball", "bounce_paddle", "bounced_block"],
+        );
 
     let mut game = Application::build("./", loading::Loading)?
         .with_resource(display_config)

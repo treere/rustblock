@@ -1,16 +1,17 @@
-use amethyst::{input::is_close_requested, prelude::*};
-
 use crate::dispatcher::CustomGameData;
 use crate::intro::Intro;
+use crate::resources::Lifes;
 use crate::resources::MaterialVector;
 use crate::util::*;
-
+use amethyst::{input::is_close_requested, prelude::*};
 pub struct Loading;
 
 impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Loading {
     fn on_start(&mut self, data: StateData<'_, CustomGameData<'_, '_>>) {
         let world = data.world;
         initialize_colors(world);
+
+        world.add_resource(Lifes::default());
     }
 
     fn update(

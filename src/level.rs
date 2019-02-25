@@ -1,9 +1,11 @@
 use amethyst::{
+    assets::Loader,
     core::{nalgebra::Vector3, Transform},
     ecs::Join,
     input::{is_close_requested, is_key_down},
     prelude::*,
     renderer::{Camera, DisplayConfig, Projection, VirtualKeyCode},
+    ui::{Anchor, TtfFormat, UiText, UiTransform},
 };
 
 use crate::component::{Ball, Block, LevelComponent, Paddle};
@@ -11,7 +13,7 @@ use crate::config::{BallConfig, BlockConfig, PaddleConfig};
 use crate::dispatcher::CustomGameData;
 use crate::intro;
 use crate::pause::Pause;
-use crate::resources::MaterialVector;
+use crate::resources::{Lifes, MaterialVector};
 use crate::util::*;
 
 pub struct Level;
@@ -29,6 +31,7 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Level {
         initialize_pad(world);
         initialize_ball(world);
         initialize_block(world);
+        initialize_lifes(world);
     }
 
     fn update(
@@ -37,8 +40,26 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Level {
     ) -> Trans<CustomGameData<'a, 'b>, StateEvent> {
         data.data.update(&data.world, true);
         if data.world.read_storage::<Block>().is_empty() {
+            return Trans::Switch(Box::new(intro::Intro { ui: None }));
+        }
+
+        if !data.world.read_storage::<Ball>().is_empty() {
+            return Trans::None;
+        }
+
+        let lifes = data.world.write_resource::<Lifes>().lifes - 1;
+
+        if let Some(e) = data.world.read_resource::<Lifes>().e {
+            if let Some(text) = data.world.write_storage::<UiText>().get_mut(e) {
+                text.text = format!("{}", lifes).to_string();
+            }
+        }
+
+        if lifes == 0 {
             Trans::Switch(Box::new(intro::Intro { ui: None }))
         } else {
+            initialize_ball(data.world);
+            data.world.write_resource::<Lifes>().lifes = lifes;
             Trans::None
         }
     }
@@ -204,4 +225,44 @@ fn initialize_block(world: &mut World) {
                 .build();
         }
     }
+}
+
+fn initialize_lifes(world: &mut World) {
+    let lifes = match world.read_resource::<Lifes>().lifes {
+        0 => 3,
+        x => x,
+    };
+
+    let font = world.read_resource::<Loader>().load(
+        "font/square.ttf",
+        TtfFormat,
+        Default::default(),
+        (),
+        &world.read_resource(),
+    );
+    let transform = UiTransform::new(
+        "P1".to_string(),
+        Anchor::BottomRight,
+        -50.,
+        50.,
+        1.,
+        50.,
+        50.,
+        0,
+    );
+    let text = UiText::new(
+        font.clone(),
+        format!("{}", lifes).to_string(),
+        [1., 1., 1., 1.],
+        50.,
+    );
+    let e = world
+        .create_entity()
+        .with(transform)
+        .with(text)
+        .with(LevelComponent)
+        .build();
+
+    world.write_resource::<Lifes>().lifes = lifes;
+    world.write_resource::<Lifes>().e.replace(e);
 }

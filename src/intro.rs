@@ -9,6 +9,7 @@ use amethyst::{
 
 use crate::dispatcher::CustomGameData;
 use crate::level::Level;
+use crate::resources::Lifes;
 
 pub struct Intro {
     pub ui: Option<Entity>,
@@ -18,6 +19,7 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Intro {
     fn on_start(&mut self, data: StateData<'_, CustomGameData<'_, '_>>) {
         let world = data.world;
 
+        world.write_resource::<Lifes>().lifes = 3;
         let font = world.read_resource::<Loader>().load(
             "font/square.ttf",
             TtfFormat,
