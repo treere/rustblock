@@ -1,11 +1,11 @@
 use amethyst::{
-    assets::Loader,
+    assets::Handle,
     core::{nalgebra::Vector3, Transform},
     ecs::Join,
     input::{is_close_requested, is_key_down},
     prelude::*,
     renderer::{Camera, DisplayConfig, Projection, VirtualKeyCode},
-    ui::{Anchor, TtfFormat, UiText, UiTransform},
+    ui::{Anchor, FontAsset, UiText, UiTransform},
 };
 
 use crate::component::{Ball, Block, LevelComponent, Paddle};
@@ -233,13 +233,8 @@ fn initialize_lifes(world: &mut World) {
         x => x,
     };
 
-    let font = world.read_resource::<Loader>().load(
-        "font/square.ttf",
-        TtfFormat,
-        (),
-        (),
-        &world.read_resource(),
-    );
+    let font = world.read_resource::<Handle<FontAsset>>().clone();
+
     let transform = UiTransform::new(
         "P1".to_string(),
         Anchor::BottomRight,
@@ -251,7 +246,7 @@ fn initialize_lifes(world: &mut World) {
         0,
     );
     let text = UiText::new(
-        font.clone(),
+        font,
         format!("{}", lifes).to_string(),
         [1., 1., 1., 1.],
         50.,

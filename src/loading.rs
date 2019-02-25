@@ -3,7 +3,8 @@ use crate::intro::Intro;
 use crate::resources::Lifes;
 use crate::resources::MaterialVector;
 use crate::util::*;
-use amethyst::{input::is_close_requested, prelude::*};
+use amethyst::{assets::Loader, input::is_close_requested, prelude::*, ui::TtfFormat};
+
 pub struct Loading;
 
 impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Loading {
@@ -12,6 +13,15 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Loading {
         initialize_colors(world);
 
         world.add_resource(Lifes::default());
+
+        let font = world.read_resource::<Loader>().load(
+            "font/square.ttf",
+            TtfFormat,
+            (),
+            (),
+            &world.read_resource(),
+        );
+        world.add_resource(font);
     }
 
     fn update(

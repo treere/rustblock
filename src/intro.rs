@@ -1,10 +1,10 @@
 use amethyst::{
-    assets::Loader,
+    assets::Handle,
     ecs::Entity,
     input::{is_close_requested, is_key_down},
     prelude::*,
     renderer::VirtualKeyCode,
-    ui::{Anchor, TtfFormat, UiText, UiTransform},
+    ui::{Anchor, FontAsset, UiText, UiTransform},
 };
 
 use crate::dispatcher::CustomGameData;
@@ -20,23 +20,13 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Intro {
         let world = data.world;
 
         world.write_resource::<Lifes>().lifes = 3;
-        let font = world.read_resource::<Loader>().load(
-            "font/square.ttf",
-            TtfFormat,
-            (),
-            (),
-            &world.read_resource(),
-        );
+
+        let font = world.read_resource::<Handle<FontAsset>>().clone();
 
         let transform =
             UiTransform::new("P1".to_string(), Anchor::Middle, 0., 0., 1., 400., 100., 0);
 
-        let ui = UiText::new(
-            font.clone(),
-            "RustBlocks".to_string(),
-            [1., 1., 1., 1.],
-            50.,
-        );
+        let ui = UiText::new(font, "RustBlocks".to_string(), [1., 1., 1., 1.], 50.);
 
         self.ui = Some(world.create_entity().with(transform).with(ui).build());
     }
