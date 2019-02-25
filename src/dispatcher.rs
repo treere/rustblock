@@ -42,7 +42,7 @@ impl<'a, 'b> CustomGameDataBuilder<'a, 'b> {
     pub fn with_base_bundle<B: SystemBundle<'a, 'b>>(mut self, bundle: B) -> Result<Self> {
         bundle
             .build(&mut self.core)
-            .map_err(|err| Error::Core(err))
+            .map_err(Error::Core)
             .expect("Cannot bundle");
         Ok(self)
     }

@@ -18,7 +18,7 @@ impl<'s> System<'s> for BounceWall {
 
     fn run(&mut self, (ent, mut balls, transforms, conf): Self::SystemData) {
         let (width, height) = {
-            let (w, h) = conf.dimensions.clone().unwrap();
+            let (w, h) = conf.dimensions.unwrap();
             (w as f32, h as f32)
         };
 

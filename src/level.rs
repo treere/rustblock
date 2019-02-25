@@ -94,7 +94,7 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Level {
 fn initialize_camera(world: &mut World) {
     let (width, height) = {
         let conf = world.read_resource::<DisplayConfig>();
-        let (w, h) = conf.dimensions.clone().unwrap();
+        let (w, h) = conf.dimensions.unwrap();
         (w as f32, h as f32)
     };
 
@@ -127,14 +127,14 @@ fn initialize_pad(world: &mut World) {
     let mut trans = Transform::default();
     {
         let conf = world.read_resource::<DisplayConfig>();
-        let (w, _) = conf.dimensions.clone().unwrap();
+        let (w, _) = conf.dimensions.unwrap();
         trans.set_xyz((w as f32) / 2. - width / 2., height + offset, 0.);
     }
 
     let pad = Paddle {
-        width: width,
-        height: height,
-        speed: speed,
+        width,
+        height,
+        speed,
     };
 
     world
@@ -163,12 +163,12 @@ fn initialize_ball(world: &mut World) {
     let mut trans = Transform::default();
     {
         let conf = world.read_resource::<DisplayConfig>();
-        let (w, h) = conf.dimensions.clone().unwrap();
+        let (w, h) = conf.dimensions.unwrap();
         trans.set_xyz((w as f32) / 2. - radius, (h as f32) / 2. - radius, 0.);
     };
 
     let ball = Ball {
-        radius: radius,
+        radius,
         vel: Vector3::new(speed, speed, 0f32),
     };
 
@@ -189,7 +189,7 @@ fn initialize_block(world: &mut World) {
     };
     let width_off = {
         let conf = world.read_resource::<DisplayConfig>();
-        let (w, _) = conf.dimensions.clone().unwrap();
+        let (w, _) = conf.dimensions.unwrap();
 
         ((w as f32) - 10f32 * width) / 11f32
     };
@@ -210,8 +210,8 @@ fn initialize_block(world: &mut World) {
             trans.set_xyz(x, y, 0.);
 
             let block = Block {
-                width: width,
-                height: height,
+                width,
+                height,
                 life: life as i32,
             };
 
@@ -236,7 +236,7 @@ fn initialize_lifes(world: &mut World) {
     let font = world.read_resource::<Loader>().load(
         "font/square.ttf",
         TtfFormat,
-        Default::default(),
+        (),
         (),
         &world.read_resource(),
     );

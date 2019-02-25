@@ -23,7 +23,7 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Intro {
         let font = world.read_resource::<Loader>().load(
             "font/square.ttf",
             TtfFormat,
-            Default::default(),
+            (),
             (),
             &world.read_resource(),
         );
