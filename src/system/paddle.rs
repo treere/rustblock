@@ -5,31 +5,31 @@ use amethyst::{
     renderer::DisplayConfig,
 };
 
-use crate::component::Paddle;
+use crate::component::{Cube, Paddle};
 
 pub struct PaddleSystem;
 
 impl<'s> System<'s> for PaddleSystem {
     type SystemData = (
+        ReadStorage<'s, Cube>,
         WriteStorage<'s, Transform>,
         ReadStorage<'s, Paddle>,
         Read<'s, InputHandler<String, String>>,
         Read<'s, DisplayConfig>,
     );
 
-    fn run(&mut self, (mut transforms, paddles, input, conf): Self::SystemData) {
+    fn run(&mut self, (cube, mut transforms, paddles, input, conf): Self::SystemData) {
         let width = conf.dimensions.unwrap().0 as f32;
-        for (paddle, transform) in (&paddles, &mut transforms).join() {
+        for (cub, paddle, transform) in (&cube, &paddles, &mut transforms).join() {
             let movement = input.axis_value("move");
 
             if let Some(mv_amount) = movement {
-                let scaled_amount = paddle.speed * mv_amount as f32;
+                transform.move_global(paddle.vel * mv_amount as f32);
+
+                let left_border = 0.;
+                let right_border = width - cub.0.half_extents()[0] * 2.0;
                 let paddle_x = transform.translation().x;
-                transform.set_x(
-                    (paddle_x + scaled_amount)
-                        .min(width - paddle.paddle.half_extents()[0] * 2.0)
-                        .max(0.),
-                );
+                transform.set_x(paddle_x.min(right_border).max(left_border));
             }
         }
     }

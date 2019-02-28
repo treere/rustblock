@@ -1,14 +1,13 @@
 use amethyst::{
     assets::Handle,
     core::{nalgebra::Vector3, Transform},
-    ecs::Join,
     input::{is_close_requested, is_key_down},
     prelude::*,
     renderer::{Camera, DisplayConfig, Projection, VirtualKeyCode},
     ui::{Anchor, FontAsset, UiText, UiTransform},
 };
 
-use crate::component::{Ball, Block, LevelComponent, Paddle};
+use crate::component::{Ball, Block, Cube, Paddle};
 use crate::config::{BallConfig, BlockConfig, PaddleConfig};
 use crate::intro;
 use crate::pause::Pause;
@@ -39,7 +38,6 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for Level {
         world.register::<Paddle>();
         world.register::<Ball>();
         world.register::<Block>();
-        world.register::<LevelComponent>();
 
         initialize_camera(world);
         initialize_pad(world);
@@ -116,7 +114,6 @@ fn initialize_camera(world: &mut World) {
     transform.set_z(1.0);
     world
         .create_entity()
-        .with(LevelComponent)
         .with(Camera::from(Projection::orthographic(
             0.0, width, 0.0, height,
         )))
@@ -145,14 +142,18 @@ fn initialize_pad(world: &mut World) {
     }
 
     let pad = Paddle {
-        paddle: shape::Cuboid::new(math::Vector::new(0.5 * width, 0.5 * height)),
-        speed,
+        vel: Vector3::new(speed, 0f32, 0f32),
     };
+
+    let cube = Cube(shape::Cuboid::new(math::Vector::new(
+        0.5 * width,
+        0.5 * height,
+    )));
 
     world
         .create_entity()
-        .with(LevelComponent)
         .with(pad_mesh)
+        .with(cube)
         .with(pad_material)
         .with(trans)
         .with(pad)
@@ -186,7 +187,6 @@ fn initialize_ball(world: &mut World) {
 
     world
         .create_entity()
-        .with(LevelComponent)
         .with(pad_mesh)
         .with(pad_material)
         .with(trans)
@@ -221,15 +221,17 @@ fn initialize_block(world: &mut World) {
             let y = 400f32 + (cols as f32) * (height + 10f32);
             trans.set_xyz(x, y, 0.);
 
-            let block = Block {
-                block: shape::Cuboid::new(math::Vector::new(0.5 * width, 0.5 * height)),
-                life: life as i32,
-            };
+            let block = Block { life: life as i32 };
+
+            let cube = Cube(shape::Cuboid::new(math::Vector::new(
+                0.5 * width,
+                0.5 * height,
+            )));
 
             world
                 .create_entity()
-                .with(LevelComponent)
                 .with(pad_mesh)
+                .with(cube)
                 .with(block_material)
                 .with(trans)
                 .with(block)
@@ -262,12 +264,7 @@ fn initialize_lifes(world: &mut World) {
         [1., 1., 1., 1.],
         50.,
     );
-    let e = world
-        .create_entity()
-        .with(transform)
-        .with(text)
-        .with(LevelComponent)
-        .build();
+    let e = world.create_entity().with(transform).with(text).build();
 
     world.write_resource::<Lifes>().lifes = lifes;
     world.write_resource::<Lifes>().e.replace(e);

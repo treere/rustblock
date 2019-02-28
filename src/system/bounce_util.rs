@@ -19,7 +19,7 @@ pub fn bounce(
         math::Translation::from(math::Vector::new(ball_pos.x, ball_pos.y)),
         math::Rotation::identity(),
     );
-    //    let block2d = shape::Cuboid::new(math::Vector::new(0.5 * width, 0.5 * height));
+
     let half_width = block.half_extents()[0];
     let half_height = block.half_extents()[1];
     let isoblock = math::Isometry::from_parts(

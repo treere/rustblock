@@ -18,7 +18,7 @@ impl<'s> System<'s> for BouncedBlock {
     );
 
     fn run(&mut self, (entities, mut blocks, mut bounced, mut mat, matvec): Self::SystemData) {
-        for (block, _bounced, entity) in (&mut blocks, &bounced, &entities).join() {
+        for (block, _, entity) in (&mut blocks, &bounced, &entities).join() {
             if block.life > 0 {
                 block.life -= 1;
             }
