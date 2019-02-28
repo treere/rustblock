@@ -10,7 +10,6 @@ use amethyst::{
 
 use crate::component::{Ball, Block, LevelComponent, Paddle};
 use crate::config::{BallConfig, BlockConfig, PaddleConfig};
-use crate::dispatcher::CustomGameData;
 use crate::intro;
 use crate::pause::Pause;
 use crate::resources::{Lifes, MaterialVector};
@@ -18,9 +17,22 @@ use crate::util::*;
 
 pub struct Level;
 
-impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Level {
-    fn on_start(&mut self, data: StateData<'_, CustomGameData<'_, '_>>) {
+#[derive(PartialEq)]
+pub enum GameState {
+    Running,
+    Menu,
+}
+impl Default for GameState {
+    fn default() -> Self {
+        GameState::Menu
+    }
+}
+
+impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for Level {
+    fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
+
+        *world.write_resource() = GameState::Running;
 
         world.register::<Paddle>();
         world.register::<Ball>();
@@ -34,11 +46,8 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Level {
         initialize_lifes(world);
     }
 
-    fn update(
-        &mut self,
-        data: StateData<CustomGameData>,
-    ) -> Trans<CustomGameData<'a, 'b>, StateEvent> {
-        data.data.update(&data.world, true);
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, StateEvent> {
+        data.data.update(&data.world);
         if data.world.read_storage::<Block>().is_empty() {
             return Trans::Switch(Box::new(intro::Intro { ui: None }));
         }
@@ -64,19 +73,20 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Level {
         }
     }
 
-    fn on_stop(&mut self, data: StateData<CustomGameData>) {
+    fn on_stop(&mut self, data: StateData<GameData>) {
         let lc = data.world.read_storage::<LevelComponent>();
         let ent = lc.fetched_entities();
         for e in ent.join() {
             ent.delete(e).expect("Cannot delete");
         }
+        *data.world.write_resource() = GameState::Menu;
     }
 
     fn handle_event(
         &mut self,
-        _data: StateData<CustomGameData>,
+        _data: StateData<GameData>,
         event: StateEvent,
-    ) -> Trans<CustomGameData<'a, 'b>, StateEvent> {
+    ) -> Trans<GameData<'a, 'b>, StateEvent> {
         if let StateEvent::Window(event) = &event {
             if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
                 Trans::Quit

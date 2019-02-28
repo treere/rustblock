@@ -1,4 +1,3 @@
-use crate::dispatcher::CustomGameData;
 use crate::intro::Intro;
 use crate::resources::Lifes;
 use crate::resources::MaterialVector;
@@ -7,8 +6,8 @@ use amethyst::{assets::Loader, input::is_close_requested, prelude::*, ui::TtfFor
 
 pub struct Loading;
 
-impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Loading {
-    fn on_start(&mut self, data: StateData<'_, CustomGameData<'_, '_>>) {
+impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for Loading {
+    fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
         initialize_colors(world);
 
@@ -24,19 +23,16 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Loading {
         world.add_resource(font);
     }
 
-    fn update(
-        &mut self,
-        data: StateData<CustomGameData>,
-    ) -> Trans<CustomGameData<'a, 'b>, StateEvent> {
-        data.data.update(&data.world, true);
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, StateEvent> {
+        data.data.update(&data.world);
         Trans::Switch(Box::new(Intro { ui: None }))
     }
 
     fn handle_event(
         &mut self,
-        _data: StateData<CustomGameData>,
+        _data: StateData<GameData>,
         event: StateEvent,
-    ) -> Trans<CustomGameData<'a, 'b>, StateEvent> {
+    ) -> Trans<GameData<'a, 'b>, StateEvent> {
         if let StateEvent::Window(event) = &event {
             if is_close_requested(&event) {
                 Trans::Quit

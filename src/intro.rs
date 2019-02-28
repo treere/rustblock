@@ -7,7 +7,6 @@ use amethyst::{
     ui::{Anchor, FontAsset, UiText, UiTransform},
 };
 
-use crate::dispatcher::CustomGameData;
 use crate::level::Level;
 use crate::resources::Lifes;
 
@@ -15,8 +14,8 @@ pub struct Intro {
     pub ui: Option<Entity>,
 }
 
-impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Intro {
-    fn on_start(&mut self, data: StateData<'_, CustomGameData<'_, '_>>) {
+impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for Intro {
+    fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
         world.write_resource::<Lifes>().lifes = 3;
@@ -31,25 +30,22 @@ impl<'a, 'b> State<CustomGameData<'a, 'b>, StateEvent> for Intro {
         self.ui = Some(world.create_entity().with(transform).with(ui).build());
     }
 
-    fn on_stop(&mut self, data: StateData<'_, CustomGameData<'_, '_>>) {
+    fn on_stop(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         if let Some(ent) = self.ui.take() {
             data.world.delete_entity(ent).expect("Cannot delete ui");
         }
     }
 
-    fn update(
-        &mut self,
-        data: StateData<CustomGameData>,
-    ) -> Trans<CustomGameData<'a, 'b>, StateEvent> {
-        data.data.update(&data.world, false);
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, StateEvent> {
+        data.data.update(&data.world);
         Trans::None
     }
 
     fn handle_event(
         &mut self,
-        _data: StateData<CustomGameData>,
+        _data: StateData<GameData>,
         event: StateEvent,
-    ) -> Trans<CustomGameData<'a, 'b>, StateEvent> {
+    ) -> Trans<GameData<'a, 'b>, StateEvent> {
         if let StateEvent::Window(event) = &event {
             if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
                 Trans::Quit

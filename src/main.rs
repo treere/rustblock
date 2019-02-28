@@ -17,7 +17,6 @@ use amethyst::{
 
 mod component;
 mod config;
-mod dispatcher;
 mod intro;
 mod level;
 mod loading;
@@ -50,18 +49,38 @@ fn main() -> amethyst::Result<()> {
         DisplayConfig::load(display_config)
     };
 
-    let game_data = dispatcher::CustomGameDataBuilder::default()
-        .with_base_bundle(RenderBundle::new(pipe, Some(display_config.clone())))?
-        .with_base_bundle(TransformBundle::new())?
-        .with_base_bundle(input_bundle)?
-        .with_base_bundle(UiBundle::<String, String>::new())?
-        .with_running(system::MoveBallSysytem, "move_ball", &[])
-        .with_running(system::PaddleSystem, "paddle_system", &[])
-        .with_running(system::BouncePaddle, "bounce_paddle", &["move_ball"])
-        .with_running(system::BounceBlock, "bounce_block", &["move_ball"])
-        .with_running(system::BouncedBlock, "bounced_block", &["bounce_block"])
-        .with_running(
-            system::BounceWall,
+    let game_data = GameDataBuilder::default()
+        .with_bundle(RenderBundle::new(pipe, Some(display_config.clone())))?
+        .with_bundle(TransformBundle::new())?
+        .with_bundle(input_bundle)?
+        .with_bundle(UiBundle::<String, String>::new())?
+        .with(
+            system::MoveBallSysytem.pausable(level::GameState::Running),
+            "move_ball",
+            &[],
+        )
+        .with(
+            system::PaddleSystem.pausable(level::GameState::Running),
+            "paddle_system",
+            &[],
+        )
+        .with(
+            system::BouncePaddle.pausable(level::GameState::Running),
+            "bounce_paddle",
+            &["move_ball"],
+        )
+        .with(
+            system::BounceBlock.pausable(level::GameState::Running),
+            "bounce_block",
+            &["move_ball"],
+        )
+        .with(
+            system::BouncedBlock.pausable(level::GameState::Running),
+            "bounced_block",
+            &["bounce_block"],
+        )
+        .with(
+            system::BounceWall.pausable(level::GameState::Running),
             "bounce_wall",
             &["move_ball", "bounce_paddle", "bounced_block"],
         );
