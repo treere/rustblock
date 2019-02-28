@@ -19,13 +19,7 @@ impl<'s> System<'s> for BounceBlock {
     fn run(&mut self, (entities, mut balls, mut blocks, transforms, mut bounc): Self::SystemData) {
         for (ball, transform) in (&mut balls, &transforms).join() {
             for (block, transformb, entity) in (&mut blocks, &transforms, &entities).join() {
-                if let Some(vertical) = bounce(
-                    transformb,
-                    transform,
-                    ball.radius,
-                    block.width,
-                    block.height,
-                ) {
+                if let Some(vertical) = bounce(transformb, transform, &ball.ball, &block.block) {
                     match vertical {
                         Collision::Vertical => ball.vel[1] = -ball.vel[1],
                         Collision::Horizontal => ball.vel[0] = -ball.vel[0],

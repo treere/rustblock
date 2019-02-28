@@ -1,8 +1,8 @@
 use amethyst::ecs::prelude::{Component, DenseVecStorage, NullStorage};
+use ncollide2d::shape;
 
 pub struct Block {
-    pub width: f32,
-    pub height: f32,
+    pub block: shape::Cuboid<f32>,
     pub life: i32,
 }
 

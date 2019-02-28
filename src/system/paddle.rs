@@ -25,7 +25,11 @@ impl<'s> System<'s> for PaddleSystem {
             if let Some(mv_amount) = movement {
                 let scaled_amount = paddle.speed * mv_amount as f32;
                 let paddle_x = transform.translation().x;
-                transform.set_x((paddle_x + scaled_amount).min(width - paddle.width).max(0.));
+                transform.set_x(
+                    (paddle_x + scaled_amount)
+                        .min(width - paddle.paddle.half_extents()[0] * 2.0)
+                        .max(0.),
+                );
             }
         }
     }

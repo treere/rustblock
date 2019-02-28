@@ -1,8 +1,8 @@
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
+use ncollide2d::shape;
 
 pub struct Paddle {
-    pub width: f32,
-    pub height: f32,
+    pub paddle: shape::Cuboid<f32>,
     pub speed: f32,
 }
 

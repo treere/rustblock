@@ -1,8 +1,9 @@
 use amethyst::core::nalgebra::Vector3;
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
+use ncollide2d::shape;
 
 pub struct Ball {
-    pub radius: f32,
+    pub ball: shape::Ball<f32>,
     pub vel: Vector3<f32>,
 }
 

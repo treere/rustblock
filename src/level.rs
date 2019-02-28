@@ -15,6 +15,8 @@ use crate::pause::Pause;
 use crate::resources::{Lifes, MaterialVector};
 use crate::util::*;
 
+use ncollide2d::{math, shape};
+
 pub struct Level;
 
 #[derive(PartialEq)]
@@ -74,23 +76,24 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for Level {
     }
 
     fn on_stop(&mut self, data: StateData<GameData>) {
-        let lc = data.world.read_storage::<LevelComponent>();
-        let ent = lc.fetched_entities();
-        for e in ent.join() {
-            ent.delete(e).expect("Cannot delete");
-        }
+        data.world.delete_all();
         *data.world.write_resource() = GameState::Menu;
+    }
+
+    fn on_resume(&mut self, data: StateData<GameData>) {
+        *data.world.write_resource() = GameState::Running;
     }
 
     fn handle_event(
         &mut self,
-        _data: StateData<GameData>,
+        data: StateData<GameData>,
         event: StateEvent,
     ) -> Trans<GameData<'a, 'b>, StateEvent> {
         if let StateEvent::Window(event) = &event {
             if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
                 Trans::Quit
             } else if is_key_down(&event, VirtualKeyCode::P) {
+                *data.world.write_resource() = GameState::Menu;
                 Trans::Push(Box::new(Pause { ui: None }))
             } else {
                 Trans::None
@@ -138,12 +141,11 @@ fn initialize_pad(world: &mut World) {
     {
         let conf = world.read_resource::<DisplayConfig>();
         let (w, _) = conf.dimensions.unwrap();
-        trans.set_xyz((w as f32) / 2. - width / 2., height + offset, 0.);
+        trans.set_xyz((w as f32) * 0.5 - width * 0.5, height + offset, 0.);
     }
 
     let pad = Paddle {
-        width,
-        height,
+        paddle: shape::Cuboid::new(math::Vector::new(0.5 * width, 0.5 * height)),
         speed,
     };
 
@@ -178,7 +180,7 @@ fn initialize_ball(world: &mut World) {
     };
 
     let ball = Ball {
-        radius,
+        ball: shape::Ball::new(radius),
         vel: Vector3::new(speed, speed, 0f32),
     };
 
@@ -220,8 +222,7 @@ fn initialize_block(world: &mut World) {
             trans.set_xyz(x, y, 0.);
 
             let block = Block {
-                width,
-                height,
+                block: shape::Cuboid::new(math::Vector::new(0.5 * width, 0.5 * height)),
                 life: life as i32,
             };
 

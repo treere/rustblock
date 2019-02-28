@@ -18,13 +18,7 @@ impl<'s> System<'s> for BouncePaddle {
     fn run(&mut self, (mut balls, paddles, transforms): Self::SystemData) {
         for (ball, transform) in (&mut balls, &transforms).join() {
             for (paddle, transformp) in (&paddles, &transforms).join() {
-                match bounce(
-                    transformp,
-                    transform,
-                    ball.radius,
-                    paddle.width,
-                    paddle.height,
-                ) {
+                match bounce(transformp, transform, &ball.ball, &paddle.paddle) {
                     Some(Collision::Vertical) => ball.vel[1] = -ball.vel[1],
                     Some(Collision::Horizontal) => ball.vel[0] = -ball.vel[0],
                     _ => (),

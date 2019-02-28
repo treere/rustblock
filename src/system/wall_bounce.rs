@@ -25,11 +25,12 @@ impl<'s> System<'s> for BounceWall {
         for (e, ball, transform) in (&ent, &mut balls, &transforms).join() {
             let ball_pos = transform.translation();
 
-            if ball_pos.x <= ball.radius || width - ball_pos.x <= ball.radius {
+            let radius = ball.ball.radius();
+            if ball_pos.x <= radius || width - ball_pos.x <= radius {
                 ball.vel[0] = -ball.vel[0];
             }
 
-            if height - ball_pos.y <= ball.radius {
+            if height - ball_pos.y <= radius {
                 ball.vel[1] = -ball.vel[1];
             } else if ball_pos.y <= -10.0 {
                 ent.delete(e).unwrap();
