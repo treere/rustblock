@@ -65,24 +65,14 @@ fn main() -> amethyst::Result<()> {
             &[],
         )
         .with(
-            system::BouncePaddle.pausable(level::GameState::Running),
-            "bounce_paddle",
-            &["move_ball"],
-        )
-        .with(
-            system::BounceBlock.pausable(level::GameState::Running),
-            "bounce_block",
+            system::Bounce.pausable(level::GameState::Running),
+            "bounce",
             &["move_ball"],
         )
         .with(
             system::BouncedBlock.pausable(level::GameState::Running),
             "bounced_block",
-            &["bounce_block"],
-        )
-        .with(
-            system::BounceWall.pausable(level::GameState::Running),
-            "bounce_wall",
-            &["move_ball", "bounce_paddle", "bounced_block"],
+            &["bounce"],
         );
 
     let mut game = Application::build("./", loading::Loading)?
