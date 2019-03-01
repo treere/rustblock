@@ -7,33 +7,33 @@ pub struct Ball {
     pub vel: Vector3<f32>,
 }
 
-impl Component for Ball {
-    type Storage = DenseVecStorage<Self>;
-}
-
 pub struct Block {
     pub life: i32,
-}
-
-pub struct Cube(pub shape::Cuboid<f32>);
-
-impl Component for Block {
-    type Storage = DenseVecStorage<Self>;
-}
-
-impl Component for Cube {
-    type Storage = DenseVecStorage<Self>;
 }
 
 #[derive(Default)]
 pub struct Bounced;
 
+pub struct Cube(pub shape::Cuboid<f32>);
+
+pub struct Paddle {
+    pub vel: Vector3<f32>,
+}
+
+impl Component for Ball {
+    type Storage = DenseVecStorage<Self>;
+}
+
+impl Component for Block {
+    type Storage = DenseVecStorage<Self>;
+}
+
 impl Component for Bounced {
     type Storage = NullStorage<Self>;
 }
 
-pub struct Paddle {
-    pub vel: Vector3<f32>,
+impl Component for Cube {
+    type Storage = DenseVecStorage<Self>;
 }
 
 impl Component for Paddle {

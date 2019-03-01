@@ -34,9 +34,7 @@ impl<'s> System<'s> for Bounce {
                     bounc.insert(entity, Bounced).unwrap();
                 }
             }
-        }
 
-        for (e, ball, transform) in (&entities, &mut balls, &transforms).join() {
             let ball_pos = transform.translation();
 
             let radius = ball.ball.radius();
@@ -46,8 +44,6 @@ impl<'s> System<'s> for Bounce {
 
             if height - ball_pos.y <= radius {
                 ball.vel[1] = -ball.vel[1];
-            } else if ball_pos.y <= -10.0 {
-                entities.delete(e).unwrap();
             }
         }
     }

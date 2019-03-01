@@ -73,6 +73,11 @@ fn main() -> amethyst::Result<()> {
             system::BouncedBlock.pausable(level::GameState::Running),
             "bounced_block",
             &["bounce"],
+        )
+        .with(
+            system::BelowZero.pausable(level::GameState::Running),
+            "below_zero",
+            &["move_ball"],
         );
 
     let mut game = Application::build("./", loading::Loading)?
