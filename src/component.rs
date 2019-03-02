@@ -4,7 +4,6 @@ use ncollide2d::shape;
 
 pub struct Ball {
     pub ball: shape::Ball<f32>,
-    pub vel: Vector3<f32>,
 }
 
 pub struct Block {
@@ -17,8 +16,10 @@ pub struct Bounced;
 pub struct Cube(pub shape::Cuboid<f32>);
 
 pub struct Paddle {
-    pub vel: Vector3<f32>,
+    pub speed: f32,
 }
+
+pub struct Direction(pub Vector3<f32>);
 
 impl Component for Ball {
     type Storage = DenseVecStorage<Self>;
@@ -33,6 +34,10 @@ impl Component for Bounced {
 }
 
 impl Component for Cube {
+    type Storage = DenseVecStorage<Self>;
+}
+
+impl Component for Direction {
     type Storage = DenseVecStorage<Self>;
 }
 

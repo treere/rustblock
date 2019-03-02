@@ -7,11 +7,11 @@ use amethyst::{
     ui::{Anchor, FontAsset, UiText, UiTransform},
 };
 
-use crate::component::{Ball, Block, Cube, Paddle};
+use crate::component::{Ball, Block, Cube, Direction, Paddle};
 use crate::config::{BallConfig, BlockConfig, PaddleConfig};
 use crate::intro;
 use crate::pause::Pause;
-use crate::resources::{Lifes, MaterialVector};
+use crate::resources::{Lifes, MaterialVector, WindowSize};
 use crate::util::*;
 
 use ncollide2d::{math, shape};
@@ -35,10 +35,6 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for Level {
 
         *world.write_resource() = GameState::Running;
 
-        world.register::<Paddle>();
-        world.register::<Ball>();
-        world.register::<Block>();
-
         initialize_camera(world);
         initialize_pad(world);
         initialize_ball(world);
@@ -48,6 +44,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for Level {
 
     fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, StateEvent> {
         data.data.update(&data.world);
+
         if data.world.read_storage::<Block>().is_empty() {
             return Trans::Switch(Box::new(intro::Intro { ui: None }));
         }
@@ -119,6 +116,7 @@ fn initialize_camera(world: &mut World) {
         )))
         .with(transform)
         .build();
+    *world.write_resource() = WindowSize { width, height };
 }
 
 fn initialize_pad(world: &mut World) {
@@ -141,9 +139,7 @@ fn initialize_pad(world: &mut World) {
         trans.set_xyz((w as f32) * 0.5 - width * 0.5, height + offset, 0.);
     }
 
-    let pad = Paddle {
-        vel: Vector3::new(speed, 0f32, 0f32),
-    };
+    let pad = Paddle { speed };
 
     let cube = Cube(shape::Cuboid::new(math::Vector::new(
         0.5 * width,
@@ -157,6 +153,7 @@ fn initialize_pad(world: &mut World) {
         .with(pad_material)
         .with(trans)
         .with(pad)
+        .with(Direction(Vector3::new(0f32, 0f32, 0f32)))
         .build();
 }
 
@@ -182,7 +179,6 @@ fn initialize_ball(world: &mut World) {
 
     let ball = Ball {
         ball: shape::Ball::new(radius),
-        vel: Vector3::new(speed, speed, 0f32),
     };
 
     world
@@ -191,6 +187,7 @@ fn initialize_ball(world: &mut World) {
         .with(pad_material)
         .with(trans)
         .with(ball)
+        .with(Direction(Vector3::new(speed, speed, 0f32)))
         .build();
 }
 
@@ -210,7 +207,7 @@ fn initialize_block(world: &mut World) {
             let pad_mesh = create_mesh(world, generate_rectangle_vertices(0.0, 0.0, width, height));
 
             let life = cols + 1;
-            let block_material = {
+            let material = {
                 let m = world.read_resource::<MaterialVector>();
                 m.lifes[life + 1].clone()
             };
@@ -232,7 +229,7 @@ fn initialize_block(world: &mut World) {
                 .create_entity()
                 .with(pad_mesh)
                 .with(cube)
-                .with(block_material)
+                .with(material)
                 .with(trans)
                 .with(block)
                 .build();

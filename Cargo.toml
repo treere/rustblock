@@ -5,6 +5,11 @@ authors = ["Andrea Tomasi(treere)"]
 edition = "2018"
 
 [dependencies]
-amethyst = {"version" ="0.10.0","features"=["nightly"]}
 serde = "*"
-ncollide2d = "0.18.2"
+ncollide2d = "*"
+
+
+[dependencies.amethyst]
+version ="0.10.0"
+default-features = false
+features=["nightly"]

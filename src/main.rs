@@ -55,11 +55,6 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(input_bundle)?
         .with_bundle(UiBundle::<String, String>::new())?
         .with(
-            system::MoveBallSysytem.pausable(level::GameState::Running),
-            "move_ball",
-            &[],
-        )
-        .with(
             system::PaddleSystem.pausable(level::GameState::Running),
             "paddle_system",
             &[],
@@ -67,7 +62,7 @@ fn main() -> amethyst::Result<()> {
         .with(
             system::Bounce.pausable(level::GameState::Running),
             "bounce",
-            &["move_ball"],
+            &["paddle_system"],
         )
         .with(
             system::BouncedBlock.pausable(level::GameState::Running),
@@ -77,7 +72,7 @@ fn main() -> amethyst::Result<()> {
         .with(
             system::BelowZero.pausable(level::GameState::Running),
             "below_zero",
-            &["move_ball"],
+            &["bounce"],
         );
 
     let mut game = Application::build("./", loading::Loading)?

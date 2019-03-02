@@ -12,3 +12,9 @@ pub struct Lifes {
     pub lifes: u32,
     pub e: Option<Entity>,
 }
+
+#[derive(Default)]
+pub struct WindowSize {
+    pub width: f32,
+    pub height: f32,
+}

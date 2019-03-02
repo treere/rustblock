@@ -14,7 +14,7 @@ impl Default for PaddleConfig {
             width: 100f32,
             height: 10f32,
             offset: 10f32,
-            speed: 6f32,
+            speed: 300f32,
         }
     }
 }
