@@ -3,7 +3,7 @@ use amethyst::ecs::prelude::{Component, DenseVecStorage, NullStorage};
 use ncollide2d::shape;
 
 pub struct Ball {
-    pub ball: shape::Ball<f32>,
+    pub obj: shape::Ball<f32>,
 }
 
 pub struct Block {
@@ -13,7 +13,9 @@ pub struct Block {
 #[derive(Default)]
 pub struct Bounced;
 
-pub struct Cube(pub shape::Cuboid<f32>);
+pub struct Cube {
+    pub obj: shape::Cuboid<f32>,
+}
 
 pub struct Paddle {
     pub speed: f32,

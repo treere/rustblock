@@ -120,12 +120,20 @@ fn initialize_camera(world: &mut World) {
 }
 
 fn initialize_pad(world: &mut World) {
-    let (width, height, offset, speed) = {
+    let (half_width, half_height, offset, speed) = {
         let config = world.read_resource::<PaddleConfig>();
-        (config.width, config.height, config.offset, config.speed)
+        (
+            config.width / 2.0,
+            config.height / 2.0,
+            config.offset,
+            config.speed,
+        )
     };
 
-    let pad_mesh = create_mesh(world, generate_rectangle_vertices(0.0, 0.0, width, height));
+    let pad_mesh = create_mesh(
+        world,
+        generate_rectangle_vertices(-half_width, -half_height, half_width, half_height),
+    );
 
     let pad_material = {
         let m = world.read_resource::<MaterialVector>();
@@ -136,15 +144,14 @@ fn initialize_pad(world: &mut World) {
     {
         let conf = world.read_resource::<DisplayConfig>();
         let (w, _) = conf.dimensions.unwrap();
-        trans.set_xyz((w as f32) * 0.5 - width * 0.5, height + offset, 0.);
+        trans.set_xyz((w as f32) * 0.5 - half_width, half_height + offset, 0.);
     }
 
     let pad = Paddle { speed };
 
-    let cube = Cube(shape::Cuboid::new(math::Vector::new(
-        0.5 * width,
-        0.5 * height,
-    )));
+    let cube = Cube {
+        obj: shape::Cuboid::new(math::Vector::new(half_width, half_height)),
+    };
 
     world
         .create_entity()
@@ -178,7 +185,7 @@ fn initialize_ball(world: &mut World) {
     };
 
     let ball = Ball {
-        ball: shape::Ball::new(radius),
+        obj: shape::Ball::new(radius),
     };
 
     world
@@ -192,19 +199,22 @@ fn initialize_ball(world: &mut World) {
 }
 
 fn initialize_block(world: &mut World) {
-    let (width, height) = {
+    let (half_width, half_height) = {
         let config = world.read_resource::<BlockConfig>();
-        (config.width, config.height)
+        (config.width / 2.0, config.height / 2.0)
     };
     let width_off = {
         let conf = world.read_resource::<DisplayConfig>();
         let (w, _) = conf.dimensions.unwrap();
 
-        ((w as f32) - 10f32 * width) / 11f32
+        ((w as f32) - 10f32 * 2.0 * half_width) / 11f32
     };
     for rows in 0..10 {
         for cols in 0..3 {
-            let pad_mesh = create_mesh(world, generate_rectangle_vertices(0.0, 0.0, width, height));
+            let pad_mesh = create_mesh(
+                world,
+                generate_rectangle_vertices(-half_width, -half_height, half_width, half_height),
+            );
 
             let life = cols + 1;
             let material = {
@@ -214,16 +224,15 @@ fn initialize_block(world: &mut World) {
 
             let mut trans = Transform::default();
 
-            let x = width_off + (width + width_off) * (rows as f32);
-            let y = 400f32 + (cols as f32) * (height + 10f32);
+            let x = width_off + half_width + (2.0 * half_width + width_off) * (rows as f32);
+            let y = 400f32 + (cols as f32) * (2.0 * half_height + 10f32);
             trans.set_xyz(x, y, 0.);
 
             let block = Block { life: life as i32 };
 
-            let cube = Cube(shape::Cuboid::new(math::Vector::new(
-                0.5 * width,
-                0.5 * height,
-            )));
+            let cube = Cube {
+                obj: shape::Cuboid::new(math::Vector::new(half_width, half_height)),
+            };
 
             world
                 .create_entity()

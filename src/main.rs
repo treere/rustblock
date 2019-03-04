@@ -80,10 +80,6 @@ fn main() -> amethyst::Result<()> {
         .with_resource(config::PaddleConfig::default())
         .with_resource(config::BallConfig::default())
         .with_resource(config::BlockConfig::default())
-        .with_frame_limit(
-            FrameRateLimitStrategy::SleepAndYield(Duration::from_millis(1)),
-            30,
-        )
         .build(game_data)?;
 
     game.run();

@@ -29,7 +29,7 @@ impl Default for BallConfig {
     fn default() -> Self {
         BallConfig {
             radius: 5f32,
-            speed: 200f32,
+            speed: 100f32,
         }
     }
 }
