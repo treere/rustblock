@@ -36,6 +36,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for Level {
         *world.write_resource() = GameState::Running;
 
         initialize_camera(world);
+        initialize_world_boundaries(world);
         initialize_pad(world);
         initialize_ball(world);
         initialize_block(world);
@@ -117,6 +118,42 @@ fn initialize_camera(world: &mut World) {
         .with(transform)
         .build();
     *world.write_resource() = WindowSize { width, height };
+}
+
+fn initialize_world_boundaries(world: &mut World) {
+    let (width, height) = {
+        let conf = world.read_resource::<DisplayConfig>();
+        let (w, h) = conf.dimensions.unwrap();
+        (w as f32, h as f32)
+    };
+
+    {
+        // top border
+        let cube = Cube {
+            obj: shape::Cuboid::new(math::Vector::new(2. * width, 10.)),
+        };
+        let mut tran = Transform::default();
+        tran.set_xyz(-width * 0.5, height + 5., 0.);
+        world.create_entity().with(cube).with(tran).build();
+    }
+    {
+        // left border
+        let cube = Cube {
+            obj: shape::Cuboid::new(math::Vector::new(10., 2. * height)),
+        };
+        let mut tran = Transform::default();
+        tran.set_xyz(-5., 0., 0.);
+        world.create_entity().with(cube).with(tran).build();
+    }
+    {
+        // right border
+        let cube = Cube {
+            obj: shape::Cuboid::new(math::Vector::new(10., 2. * height)),
+        };
+        let mut tran = Transform::default();
+        tran.set_xyz(width + 5., 0., 0.);
+        world.create_entity().with(cube).with(tran).build();
+    }
 }
 
 fn initialize_pad(world: &mut World) {

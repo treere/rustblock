@@ -38,7 +38,7 @@ impl<'s> System<'s> for Bounce {
             mut directions,
         ): Self::SystemData,
     ) {
-        let WindowSize { width, height } = *world_size;
+        let WindowSize { width, .. } = *world_size;
 
         // Move all
         for (transform, dir) in (&mut transforms, &directions).join() {
@@ -55,7 +55,7 @@ impl<'s> System<'s> for Bounce {
         }
 
         // Manage collisions.
-        for (ball, ball_pos, dir) in (&balls, &transforms, &mut directions).join() {
+        for (ball, ball_pos, dir, ()) in (&balls, &transforms, &mut directions, !&cube).join() {
             let ball_pos = ball_pos.translation();
 
             let isoball = math::Isometry::from_parts(
@@ -63,7 +63,7 @@ impl<'s> System<'s> for Bounce {
                 math::Rotation::identity(),
             );
 
-            for (cub, cub_pos, entity) in (&cube, &transforms, &entities).join() {
+            for (cub, cub_pos, entity, ()) in (&cube, &transforms, &entities, !&balls).join() {
                 let block_pos = cub_pos.translation();
 
                 let isoblock = math::Isometry::from_parts(
@@ -84,15 +84,6 @@ impl<'s> System<'s> for Bounce {
                     }
                     _ => (),
                 }
-            }
-
-            let radius = ball.obj.radius();
-            if ball_pos.x <= radius || width - ball_pos.x <= radius {
-                dir.0[0] = -dir.0[0];
-            }
-
-            if height - ball_pos.y <= radius {
-                dir.0[1] = -dir.0[1];
             }
         }
     }
