@@ -3,10 +3,9 @@ extern crate ncollide2d;
 extern crate serde;
 
 use std::path::Path;
-use std::time::Duration;
 
 use amethyst::{
-    core::{frame_limiter::FrameRateLimitStrategy, TransformBundle},
+    core::TransformBundle,
     input::InputBundle,
     prelude::*,
     renderer::{DisplayConfig, DrawFlat, Pipeline, PosTex, RenderBundle, Stage},
@@ -15,6 +14,7 @@ use amethyst::{
     LoggerConfig, StdoutLog,
 };
 
+mod bundle;
 mod component;
 mod config;
 mod intro;
@@ -54,26 +54,7 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(TransformBundle::new())?
         .with_bundle(input_bundle)?
         .with_bundle(UiBundle::<String, String>::new())?
-        .with(
-            system::PaddleSystem.pausable(level::GameState::Running),
-            "paddle_system",
-            &[],
-        )
-        .with(
-            system::Bounce.pausable(level::GameState::Running),
-            "bounce",
-            &["paddle_system"],
-        )
-        .with(
-            system::BouncedBlock.pausable(level::GameState::Running),
-            "bounced_block",
-            &["bounce"],
-        )
-        .with(
-            system::BelowZero.pausable(level::GameState::Running),
-            "below_zero",
-            &["bounce"],
-        );
+        .with_bundle(bundle::LevelBundle::default())?;
 
     let mut game = Application::build("./", loading::Loading)?
         .with_resource(display_config)
